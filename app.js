@@ -7,7 +7,11 @@ const path = require('path');
 
 const fs = require('fs');
 const csvParser = require('csv-parser');
+const { async } = require('rxjs');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+
+// const twilio = require('twilio');
+// const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 const csvFile = process.env.DATA_FILE || 'users.csv';
 
@@ -47,6 +51,7 @@ async function writeUserToCSV(user) {
       { id: 'role', title: 'role' },
       { id: 'phone', title: 'phone' },
       { id: 'email', title: 'email' },
+      { id: 'confirmation', title: 'confirmation' },
       { id: 'transport', title: 'transport' },
       { id: 'participants', title: 'participants' },
     ],
@@ -76,6 +81,7 @@ async function updateUserRole(username, newRole) {
       { id: 'role', title: 'role' },
       { id: 'phone', title: 'phone' },
       { id: 'email', title: 'email' },
+      { id: 'confirmation', title: 'confirmation' },
       { id: 'transport', title: 'transport' },
       { id: 'participants', title: 'participants' },
     ],
@@ -85,6 +91,35 @@ async function updateUserRole(username, newRole) {
   await csvWriter.writeRecords(users);
 }
 
+async function getUserByName(username) {
+  const users = await readUsersFromCSV();
+  const userIndex = users.findIndex((user) => user.username === username);
+
+  if (userIndex === -1) {
+    throw new Error(`User ${username} not found`);
+  }
+
+  return users[userIndex];
+}
+
+
+async function downloadGuestsCsv() {
+  const users = await readUsersFromCSV();
+  const header = ['שם', 'מספר טלפון', 'מאושר הגעה', 'מספר משתתפים', 'הסעה']
+  const array = users.map(user => {
+
+    // Utils method
+    var confirmation = (user.confirmation?.toLowerCase?.() === 'true');
+    var transport = (user.transport?.toLowerCase?.() === 'true');
+    return [user.hebrewname, user.phone, confirmation ? 'כן' : 'לא', user.participants, transport ? 'כן' : 'לא'];
+  })
+
+  const value = [header].concat(array).map(a => a.join(',')).join('\n');
+  fs.writeFileSync('newFile.csv', value, 'utf8', (err) => {
+    if(err) console.log('error');
+    else console.log('Ok');
+  })
+}
 
 // Middleware to verify JWT
 function verifyToken(req, res, next) {
@@ -111,6 +146,24 @@ function checkRole(role) {
   };
 }
 
+// TWILIO send message
+// async function sendWhatsAppMessage(toPhoneNumber, message) {
+//   try {
+//       console.log(process.env.TWILIO_PHONE_NUMBER);
+//       const response = await client.messages.create({
+//           body: message,
+//           from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
+//           to: `whatsapp:${toPhoneNumber}`,
+//       });
+//       console.log('WhatsApp message sent: ', response.sid);
+//       return response.sid;
+//   } catch (error) {
+//       console.log('Failed to send WhatsApp message: ', error);
+//       throw error;
+//   }
+// }
+
+
 app.post('/login', async (req, res) => {
   const users = await readUsersFromCSV();
   const user = users.find((user) => user.username === req.body.username);
@@ -136,6 +189,33 @@ app.post('/login', async (req, res) => {
 app.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
   res.status(200).send('Admin action');
 });
+
+app.get('/admin/download', async(req, res) => {
+  await downloadGuestsCsv();
+  return res.download('newFile.csv', () => {
+    fs.unlinkSync("newFile.csv");
+  })
+});
+
+// app.post('/send-messages', verifyToken, checkRole('admin'), async (req, res) => {
+//   try {
+//       const users = await readUsersFromCSV();
+//       const message = req.body.message || 'Hello from the Wedding App!';
+
+//       // Send the message to all users with a phone number
+//       await Promise.all(
+//           users
+//               .filter((user) => !!user.phone)
+//               .map((user) => sendWhatsAppMessage(user.phone, message))
+//       );
+
+//       res.status(200).send({ success: true, message: 'Messages sent to all users.' });
+//   } catch (error) {
+//       console.log('Error sending messages to users: ', error);
+//       res.status(500).send({ success: false, message: 'Failed to send messages to users.' });
+//   }
+// });
+
 
 // Route for guest actions
 app.get('/guest', verifyToken, checkRole('guest'), (req, res) => {

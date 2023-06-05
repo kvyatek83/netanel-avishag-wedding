@@ -4,9 +4,31 @@ const csvParser = require('csv-parser');
 const bcrypt = require('bcryptjs');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-const csvFile = 'users.csv';
+const csvFile = process.env.DATA_FILE || 'users.csv';
+
+// Leading zeros
+// function wrapStringWithLeadingZeros(str) {
+//   if (/^0\d+/.test(str)) {
+//     return `="` + str + `"`;
+//   }
+//   return str;
+// }
+
+function parseLeadingZerosPhoneToPrefixPhone(str) {
+  if (/^0\d+/.test(str)) {
+    const israelPrefix = '+972';
+    return `${israelPrefix}${Number(str)}`;
+  }
+  
+  return str;
+}
+
 
 async function createUserInCSV(user) {
+  // Leading zeros not sure that nedeeded
+  const phone = (typeof user.phone === 'string' && user.phone[0] === '0' ? parseLeadingZerosPhoneToPrefixPhone(user.phone) : user.phone);
+  user.phone = phone;
+
   const csvWriter = createCsvWriter({
     path: csvFile,
     header: [
@@ -17,6 +39,7 @@ async function createUserInCSV(user) {
       { id: 'role', title: 'role' },
       { id: 'phone', title: 'phone' },
       { id: 'email', title: 'email' },
+      { id: 'confirmation', title: 'confirmation' },
       { id: 'transport', title: 'transport' },
       { id: 'participants', title: 'participants' },
     ],
@@ -86,6 +109,7 @@ async function createAdminUser(newUser) {
     role: 'admin',
     phone: adminPhone1,
     email: adminEmail1,
+    confirmation: true,
     transport: adminTransport1,
     participants: adminParticipants1,
   };
@@ -98,6 +122,7 @@ async function createAdminUser(newUser) {
     role: 'admin',
     phone: adminPhone2,
     email: adminEmail2,
+    confirmation: true,
     transport: adminTransport2,
     participants: adminParticipants2,
   };

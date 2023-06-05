@@ -1,1 +1,2 @@
-id,username,hebrewname,password,role,phone,email,transport,participants
+id,username,hebrewname,password,role,phone,email,confirmation,transport,participants
+1,Netanel Kvyatek,נתנאל קביאטק,$2a$08$2jC.NibYmXWW94af1ungquPeK.D2JQgEdrfA640BG.lR5nOEr8Qa.,admin,+972524281897,kvyatek83@gmail.com,true,false,1
