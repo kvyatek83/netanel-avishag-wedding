@@ -255,7 +255,7 @@ app.get('/guest', verifyToken, checkRole('guest'), (req, res) => {
   res.status(200).send('Guest action');
 });
 
-app.get('/guest', (req, res) => {
+app.get('/api/hello', (req, res) => {
   res.status(200).send('Hello world');
 });
 
