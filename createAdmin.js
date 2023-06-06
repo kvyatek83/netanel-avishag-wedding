@@ -1,70 +1,12 @@
 require('dotenv').config();
-const fs = require('fs');
-const csvParser = require('csv-parser');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
 const bcrypt = require('bcryptjs');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+var utils = require('./server/utils');
+var db = require('./server/database-utils');
 
-const csvFile = process.env.DATA_FILE || 'users.csv';
-
-// Leading zeros
-// function wrapStringWithLeadingZeros(str) {
-//   if (/^0\d+/.test(str)) {
-//     return `="` + str + `"`;
-//   }
-//   return str;
-// }
-
-function parseLeadingZerosPhoneToPrefixPhone(str) {
-  if (/^0\d+/.test(str)) {
-    const israelPrefix = '+972';
-    return `${israelPrefix}${Number(str)}`;
-  }
-  
-  return str;
-}
-
-
-async function createUserInCSV(user) {
-  // Leading zeros not sure that nedeeded
-  const phone = (typeof user.phone === 'string' && user.phone[0] === '0' ? parseLeadingZerosPhoneToPrefixPhone(user.phone) : user.phone);
-  user.phone = phone;
-
-  const csvWriter = createCsvWriter({
-    path: csvFile,
-    header: [
-      { id: 'id', title: 'id' },
-      { id: 'username', title: 'username' },
-      { id: 'hebrewname', title: 'hebrewname' },
-      { id: 'password', title: 'password' },
-      { id: 'role', title: 'role' },
-      { id: 'phone', title: 'phone' },
-      { id: 'email', title: 'email' },
-      { id: 'confirmation', title: 'confirmation' },
-      { id: 'transport', title: 'transport' },
-      { id: 'participants', title: 'participants' },
-    ],
-    append: true,
-  });
-
-  return csvWriter.writeRecords([user]);
-}
-
-async function readUsersFromCSV() {
-  const users = [];
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(csvFile)
-      .pipe(csvParser())
-      .on('data', (row) => {
-        users.push(row);
-      })
-      .on('end', () => {
-        resolve(users);
-      })
-      .on('error', (err) => {
-        reject(err);
-      });
-  });
-}
+const csvFile = path.resolve(process.env.DATA_FILE || 'users.csv');
 
 // Admin 1
 const adminUsername1 = process.env.ADMIN_USERNAME_1;
@@ -85,7 +27,7 @@ const adminTransport2 = process.env.ADMIN_TRANSPORT_2;
 const adminParticipants2 = process.env.ADMIN_PAETICIPANTS_2;
 
 async function createAdminUser(newUser) {
-  const users = await readUsersFromCSV();
+  const users = await db.readUsersFromCSV(csvFile);
 
   const existingUser = users.find((user) => user.username === newUser.username);
   if (existingUser) {
@@ -94,15 +36,16 @@ async function createAdminUser(newUser) {
   } else {
     const hashedPassword = bcrypt.hashSync(newUser.password, bcrypt.genSaltSync(8));
     newUser.password = hashedPassword;
-  
-    await createUserInCSV(newUser);
+    utils.parseLeadingZerosPhoneToPrefixPhone(newUser);
+
+    await db.createUserInCSV(csvFile, newUser);
     console.log(`Admin user ${newUser.username} created successfully!`);
   }
 } 
 
 (async () => {
   const newUserAdmin1 = {
-    id: '1',
+    id: uuidv4(),
     username: adminUsername1,
     hebrewname: adminHebname1,
     password: adminPassword1,
@@ -115,7 +58,7 @@ async function createAdminUser(newUser) {
   };
 
   const newUserAdmin2 = {
-    id: '2',
+    id: uuidv4(),
     username: adminUsername2,
     hebrewname: adminHebname2,
     password: adminPassword2,

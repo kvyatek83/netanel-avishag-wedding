@@ -10,11 +10,13 @@ const csvParser = require('csv-parser');
 const { async } = require('rxjs');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
+var utils = require('./server/utils');
+var db = require('./server/database-utils');
+
 // const twilio = require('twilio');
 // const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-const csvFile = process.env.DATA_FILE || 'users.csv';
-
+const csvFile = path.resolve(process.env.DATA_FILE || 'users.csv');
 
 // Create Express app
 const app = express();
@@ -24,22 +26,22 @@ app.use(bodyParser.json());
 app.get('/*', (req, res) => res.sendFile(path.join(__dirname)));
 
 // CSV
-async function readUsersFromCSV() {
-  const users = [];
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(csvFile)
-      .pipe(csvParser())
-      .on('data', (row) => {
-        users.push(row);
-      })
-      .on('end', () => {
-        resolve(users);
-      })
-      .on('error', (err) => {
-        reject(err);
-      });
-  });
-}
+// async function readUsersFromCSV() {
+//   const users = [];
+//   return new Promise((resolve, reject) => {
+//     fs.createReadStream(csvFile)
+//       .pipe(csvParser())
+//       .on('data', (row) => {
+//         users.push(row);
+//       })
+//       .on('end', () => {
+//         resolve(users);
+//       })
+//       .on('error', (err) => {
+//         reject(err);
+//       });
+//   });
+// }
 
 async function writeUserToCSV(user) {
   const csvWriter = createCsvWriter({
@@ -62,7 +64,7 @@ async function writeUserToCSV(user) {
 }
 
 async function updateUserRole(username, newRole) {
-  const users = await readUsersFromCSV();
+  const users = await db.readUsersFromCSV(csvFile);
   const userIndex = users.findIndex((user) => user.username === username);
 
   if (userIndex === -1) {
@@ -92,7 +94,7 @@ async function updateUserRole(username, newRole) {
 }
 
 async function getUserByName(username) {
-  const users = await readUsersFromCSV();
+  const users = await db.readUsersFromCSV(csvFile);
   const userIndex = users.findIndex((user) => user.username === username);
 
   if (userIndex === -1) {
@@ -103,25 +105,27 @@ async function getUserByName(username) {
 }
 
 
-async function downloadGuestsCsv() {
-  const users = await readUsersFromCSV();
-  const header = ['שם', 'מספר טלפון', 'מאושר הגעה', 'מספר משתתפים', 'הסעה']
-  const array = users.map(user => {
+// async function downloadGuestsCsv() {
+//   const users = await db.readUsersFromCSV(csvFile);
+//   const header = ['שם', 'מספר טלפון', 'מאושר הגעה', 'מספר משתתפים', 'הסעה']
+//   const array = users.map(user => {
 
-    // Utils method
-    var confirmation = (user.confirmation?.toLowerCase?.() === 'true');
-    var transport = (user.transport?.toLowerCase?.() === 'true');
-    return [user.hebrewname, user.phone, confirmation ? 'כן' : 'לא', user.participants, transport ? 'כן' : 'לא'];
-  })
+//     // Utils method
+//     var confirmation = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.confirmation));
+//     var transport = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.transport));
+//     var phone = utils.wrapPrefixPhoneWithLeadingZeros(user.phone);
+//     return [user.hebrewname, phone, confirmation, user.participants, transport];
+//   })
 
-  const value = [header].concat(array).map(a => a.join(',')).join('\n');
-  fs.writeFileSync('newFile.csv', value, 'utf8', (err) => {
-    if(err) console.log('error');
-    else console.log('Ok');
-  })
-}
+//   const value = [header].concat(array).map(val => val.join(',')).join('\n');
+//   fs.writeFileSync('newFile.csv', value, 'utf8', (err) => {
+//     if(err) console.log('error');
+//     else console.log('Ok');
+//   })
+// }
 
 // Middleware to verify JWT
+
 function verifyToken(req, res, next) {
   const token = req.headers['authorization'];
   if (!token) return res.status(403).send({ auth: false, message: 'No token provided.' });
@@ -165,7 +169,7 @@ function checkRole(role) {
 
 
 app.post('/login', async (req, res) => {
-  const users = await readUsersFromCSV();
+  const users = await db.readUsersFromCSV(csvFile);
   const user = users.find((user) => user.username === req.body.username);
   if (!user) {
     console.log(`No user ${req.body.username} found`);
@@ -191,15 +195,43 @@ app.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
 });
 
 app.get('/admin/download', async(req, res) => {
-  await downloadGuestsCsv();
-  return res.download('newFile.csv', () => {
-    fs.unlinkSync("newFile.csv");
+  const fileName = req.body.filename || 'netanel-avishag-wedding.csv';
+  const columns = req.body.columns || ['שם', 'מספר טלפון', 'מאושר הגעה', 'מספר משתתפים', 'הסעה'];
+  const keys = req.body.keys || ['hebrewname', 'phone', 'confirmation', 'participants', 'transport'];
+  const users = await db.readUsersFromCSV(csvFile);
+  const array = users.map(user => {
+    const savedKeys = [];
+    keys.forEach(key => {
+      if (user.hasOwnProperty(key)) {
+        let value;
+        if (utils.checkIfPhoneNumber(user[key])) {
+          value = utils.wrapPrefixPhoneWithLeadingZeros(user[key]);
+          savedKeys.push(value);
+        } else if (utils.checkIfBoolean(user[key])) {
+          value = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user[key]));
+          savedKeys.push(value);
+        } else {
+          savedKeys.push(user[key]);
+        }
+      }
+    });
+    // var confirmation = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.confirmation));
+    // var transport = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.transport));
+    // var phone = utils.wrapPrefixPhoneWithLeadingZeros(user.phone);
+    // return [user.hebrewname, phone, confirmation, user.participants, transport];
+
+    return savedKeys;
+  })
+
+  await db.downloadGuestsCsv(fileName, columns, array);
+  return res.download(fileName, () => {
+    fs.unlinkSync(fileName);
   })
 });
 
 // app.post('/send-messages', verifyToken, checkRole('admin'), async (req, res) => {
 //   try {
-//       const users = await readUsersFromCSV();
+//       const users = await db.readUsersFromCSV();
 //       const message = req.body.message || 'Hello from the Wedding App!';
 
 //       // Send the message to all users with a phone number
@@ -218,8 +250,13 @@ app.get('/admin/download', async(req, res) => {
 
 
 // Route for guest actions
+
 app.get('/guest', verifyToken, checkRole('guest'), (req, res) => {
   res.status(200).send('Guest action');
+});
+
+app.get('/guest', (req, res) => {
+  res.status(200).send('Hello world');
 });
 
 // Start the server
