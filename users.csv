@@ -1,1 +1,3 @@
 id,username,hebrewname,password,role,phone,email,confirmation,transport,participants
+a09314a0-1d5f-44a9-8e04-1d277f56df27,Netanel Kvyatek,נתנאל קביאטק,$2a$08$dBxkHln2gE.lQxSVTqVHV..QK/cD7bnfCLdNYRh.jHmClEsxwLZsa,admin,+972524281897,kvyatek83@gmail.com,true,false,1
+f63ffd5a-f5c7-48d3-90e4-9f7e2398af4b,Avishag Joury,אבישג גורי,$2a$08$YjtdPSXLbFhMyt2D9srNFOgFvP5BhXZFm4xg161Dj.OPsDeRTgFE6,admin,+972584219595,avishagshug@gmail.com,true,false,1
