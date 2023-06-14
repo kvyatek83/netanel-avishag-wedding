@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 
 const fs = require('fs');
-const csvParser = require('csv-parser');
 const { async } = require('rxjs');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
@@ -26,22 +25,6 @@ app.use(bodyParser.json());
 app.get('/*', (req, res) => res.sendFile(path.join(__dirname)));
 
 // CSV
-// async function readUsersFromCSV() {
-//   const users = [];
-//   return new Promise((resolve, reject) => {
-//     fs.createReadStream(csvFile)
-//       .pipe(csvParser())
-//       .on('data', (row) => {
-//         users.push(row);
-//       })
-//       .on('end', () => {
-//         resolve(users);
-//       })
-//       .on('error', (err) => {
-//         reject(err);
-//       });
-//   });
-// }
 
 async function writeUserToCSV(user) {
   const csvWriter = createCsvWriter({
@@ -168,7 +151,7 @@ function checkRole(role) {
 // }
 
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   const users = await db.readUsersFromCSV(csvFile);
   const user = users.find((user) => user.username === req.body.username);
   if (!user) {
@@ -190,11 +173,11 @@ app.post('/login', async (req, res) => {
 });
 
 // Route for admin actions
-app.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
+app.get('/api/admin', verifyToken, checkRole('admin'), (req, res) => {
   res.status(200).send('Admin action');
 });
 
-app.get('/admin/download', async(req, res) => {
+app.get('/api/admin/download', async(req, res) => {
   const fileName = req.body.filename || 'netanel-avishag-wedding.csv';
   const columns = req.body.columns || ['שם', 'מספר טלפון', 'מאושר הגעה', 'מספר משתתפים', 'הסעה'];
   const keys = req.body.keys || ['hebrewname', 'phone', 'confirmation', 'participants', 'transport'];
@@ -251,8 +234,27 @@ app.get('/admin/download', async(req, res) => {
 
 // Route for guest actions
 
-app.get('/guest', verifyToken, checkRole('guest'), (req, res) => {
+app.get('/api/guest', verifyToken, checkRole('guest'), (req, res) => {
   res.status(200).send('Guest action');
+});
+
+app.get('/api/guest/:id', async(req, res) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    res.status(404).send('User id not sent');
+  }
+
+  const users = await db.readUsersFromCSV(csvFile);
+
+  const user = users.find((user) => user.id === userId);
+  if (!user) {
+    console.log(`No user for ${userId} found`);
+    return res.status(404).send('No user found.');
+  }
+
+  // return all needed properties for guest invite
+  res.status(200).send(user.username);
 });
 
 app.get('/api/hello', (req, res) => {
