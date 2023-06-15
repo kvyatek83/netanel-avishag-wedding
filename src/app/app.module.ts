@@ -10,7 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// Add material and transloco
+// Add transloco
 @NgModule({
   declarations: [
     AppComponent,
