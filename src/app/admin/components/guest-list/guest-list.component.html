@@ -1,1 +1,106 @@
-<p>guest-list works!</p>
+<ng-container *ngIf="!isLoading; else loading">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <!-- Define columns for data -->
+    <ng-container
+      *ngFor="let column of displayedColumns"
+      [matColumnDef]="column"
+    >
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ column }}</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [class.cell-changed]="isValueChanged(element, column)"
+      >
+        <span *ngIf="element.editing !== true">{{ element[column] }}</span>
+        <!-- build my component for edit cells -->
+        <mat-form-field *ngIf="element.editing === true" appearance="outline">
+          <mat-label>{{ column }}</mat-label>
+          <input
+            #abc
+            matInput
+            [value]="element[column]"
+            (input)="onCellValueChanged(element, column, abc.value)"
+          />
+        </mat-form-field>
+      </td>
+    </ng-container>
+
+    <!-- Separate column for Edit button -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let element">
+        <ng-container *ngIf="element.editing === true">
+          <button
+            mat-button
+            (click)="editRow(element)"
+            matTooltip="Save edited details"
+          >
+            <mat-icon class="actions-icons__edit">done_outline</mat-icon>
+          </button>
+          <button
+            mat-button
+            (click)="element.editing = !element.editing"
+            matTooltip="Cancel editing"
+          >
+            <mat-icon class="actions-icons__edit">close_outline</mat-icon>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="element.editing !== true">
+          <button
+            mat-button
+            (click)="revertChanges(element)"
+            matTooltip="Restor original guest details"
+          >
+            <mat-icon class="actions-icons__edit">refresh_outline</mat-icon>
+          </button>
+          <button
+            mat-button
+            (click)="element.editing = !element.editing"
+            matTooltip="Edit guest details"
+          >
+            <mat-icon class="actions-icons__edit">edit_outline</mat-icon>
+          </button>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <!-- Checkbox Column -->
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="$event ? toggleAllRows() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <tr
+      mat-header-row
+      *matHeaderRowDef="displayedColumns.concat(['actions', 'select'])"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="
+        let row;
+        columns: displayedColumns.concat(['actions', 'select'])
+      "
+    ></tr>
+  </table>
+  <mat-paginator
+    [pageSizeOptions]="[1, 2]"
+    aria-label="Select page of users"
+  ></mat-paginator>
+</ng-container>
+
+<!-- Make loading spinners -->
+<ng-template #loading> Loading... </ng-template>

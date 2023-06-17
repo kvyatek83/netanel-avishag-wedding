@@ -12,7 +12,7 @@ export class JwtInterceptor implements HttpInterceptor {
     } 
 
     var authReq = req;
-    const token = JSON.parse(window.sessionStorage.getItem('auth-user') || '');
+    const token = JSON.parse(window.localStorage.getItem('auth-user') || '');
     
     if (token) {
         authReq = req.clone({headers: req.headers.set(TOKEN_HEADER_KEY, token)})

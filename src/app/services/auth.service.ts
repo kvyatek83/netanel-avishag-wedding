@@ -17,8 +17,8 @@ export class AuthService {
   login(username: string, password: string): Observable<boolean> {
     return this.http.post<AuthResponse>('/api/login', {username, password}).pipe(
       tap((authResponse: AuthResponse) => {
-        window.sessionStorage.removeItem('auth-user');
-        window.sessionStorage.setItem('auth-user', JSON.stringify(authResponse.token));
+        window.localStorage.removeItem('auth-user');
+        window.localStorage.setItem('auth-user', JSON.stringify(authResponse.token));
 
         // console.log(authResponse);
         // const aaa = authResponse.token.split('.')[1];

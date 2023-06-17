@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
       // add also for guest?
-      const token = JSON.parse(window.sessionStorage.getItem('auth-user') || '');
+      const token = JSON.parse(window.localStorage.getItem('auth-user') || '');
       if (token) {
         const tokenPayload = JSON.parse(window.atob(token.split('.')[1]));
   

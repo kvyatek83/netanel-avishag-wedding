@@ -10,6 +10,20 @@ router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {
   res.status(200).send("Admin action");
 });
 
+router.get("/admin/get-all-guests", verifyToken, checkRole("admin"), async (req, res) => {
+  const users = await db.readUsersFromCSV(db.getDbPath());
+  res.status(200).send(users.map(user => {
+    delete user.password;
+    delete user.role;
+    const confirmation = utils.stringBooleanToBoolean(user.confirmation);
+    const transport = utils.stringBooleanToBoolean(user.transport);
+    user.confirmation = confirmation;
+    user.transport = transport;
+    user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
+    return user;
+  }));
+});
+
 router.get("/admin/download", async (req, res) => {
   const fileName = req.body.filename || "netanel-avishag-wedding.csv";
   const columns = req.body.columns || [

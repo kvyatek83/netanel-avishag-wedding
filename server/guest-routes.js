@@ -14,7 +14,7 @@ router.get("/guest/:id", async (req, res) => {
     res.status(404).send("User id not sent");
   }
 
-  const users = await db.readUsersFromCSV(csvFile);
+  const users = await db.readUsersFromCSV(db.getDbPath());
 
   const user = users.find((user) => user.id === userId);
   if (!user) {

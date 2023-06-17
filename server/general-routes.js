@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 router.post("/login", async (req, res) => {
-  const users = await db.readUsersFromCSV(csvFile);
+  const users = await db.readUsersFromCSV(db.getDbPath());
   const user = users.find((user) => user.username === req.body.username);
   if (!user) {
     console.log(`No user ${req.body.username} found`);
@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
     { id: user._id, role: user.role },
     process.env.JWT_SECRET,
     {
-      expiresIn: process.env.EXPIRES_IN || 86400, // expires in 24 hours
+      expiresIn: process.env.EXPIRES_IN || '24h', // expires in 24 hours
     }
   );
 

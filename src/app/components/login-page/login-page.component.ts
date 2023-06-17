@@ -8,16 +8,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss']
+  styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent {
   signInForm: FormGroup;
 
-  
-  
-
- 
-  constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder) { 
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private formBuilder: FormBuilder
+  ) {
     this.signInForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -38,15 +38,19 @@ export class LoginPageComponent {
   onSubmit(): void {
     if (this.signInForm.valid) {
       console.log('Form Submitted:', this.signInForm.value);
-       // this.authService.login(username, password)
-    // .pipe(take(1))
-    // .subscribe(allowed => {
-    //   if (allowed) {
-    //     this.router.navigate(['/admin']);
-    //   } else {
-    //     console.log('error');
-    //   }
-    // });
+      this.authService
+        .login(
+          this.signInForm.get('username')?.value,
+          this.signInForm.get('password')?.value
+        )
+        .pipe(take(1))
+        .subscribe((allowed) => {
+          if (allowed) {
+            this.router.navigate(['/admin']);
+          } else {
+            console.log('error');
+          }
+        });
     } else {
       console.log('Form is invalid');
     }

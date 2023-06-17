@@ -1,0 +1,42 @@
+.cell-changed {
+  background-color: #f1bbbb;
+}
+
+.mat-mdc-header-cell {
+  text-align: center !important;
+}
+:host ::ng-deep .mat-sort-header-container {
+  display: flex;
+  justify-content: center;
+}
+
+.mat-mdc-cell {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+.mat-mdc-cell:not(:last-child) {
+  border-right: 1px solid #e0e0e0;
+}
+
+.mat-mdc-form-field {
+  flex-direction: row !important;
+}
+
+.actions-icons {
+  &__save {
+    margin-right: 0;
+  }
+
+  &__cancel {
+    margin-right: 0;
+  }
+
+  &__edit {
+    margin-right: 0;
+  }
+
+  &__revert {
+    margin-right: 0;
+  }
+}

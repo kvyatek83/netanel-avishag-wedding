@@ -7,6 +7,13 @@ module.exports = {
         return str;
     },
 
+    wrapIsraeliPrefixPhoneWithLeadingZeros(str) {
+        if (str.charAt(0) == '+') {
+            return `0` + str.substr(4);
+        }
+        return str;
+    },
+
     wrapIsraeliPhoneWithLeadingZeros(str) {
         if (/^0\d+/.test(str)) {
             return `="` + str + `"`;

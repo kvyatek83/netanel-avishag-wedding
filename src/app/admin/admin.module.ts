@@ -13,6 +13,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { GuestListComponent } from './components/guest-list/guest-list.component';
+import { MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -32,6 +37,12 @@ import { GuestListComponent } from './components/guest-list/guest-list.component
     MatTableModule,
     MatPaginatorModule,
     MatCardModule,
+    MatSortModule,
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTooltipModule,
+    MatCheckboxModule
   ]
 })
 export class AdminModule { }
