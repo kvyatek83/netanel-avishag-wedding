@@ -9,13 +9,15 @@ import { LoginPageComponent } from './components/login-page/login-page.component
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EditFieldComponent } from './components/edit-field/edit-field.component';
 
 // Add transloco
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
-    HomeComponent
+    HomeComponent,
+    EditFieldComponent
   ],
   imports: [
     BrowserModule,
