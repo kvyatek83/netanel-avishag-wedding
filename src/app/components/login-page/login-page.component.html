@@ -2,11 +2,21 @@
   <div class="top"></div>
   <div class="bottom"></div>
   <div class="center">
+    <img src="./assets/login-background.png" class="photo" />
     <form class="login-form" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-      <h2>Please Sign In</h2>
       <input type="text" placeholder="username" formControlName="username" />
-      <input type="password" placeholder="password" formControlName="password" />
-      <button type="submit" [disabled]="signInForm.invalid">Sign In</button>
+      <input
+        type="password"
+        placeholder="password"
+        formControlName="password"
+      />
+      <button
+        class="login-button"
+        type="submit"
+        [disabled]="signInForm.invalid"
+      >
+        Sign In
+      </button>
     </form>
   </div>
 </div>

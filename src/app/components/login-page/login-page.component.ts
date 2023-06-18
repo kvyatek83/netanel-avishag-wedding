@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { catchError, switchMap, take, tap } from 'rxjs';
+import { take } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -12,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class LoginPageComponent {
   signInForm: FormGroup;
+  loading = false;
 
   constructor(
     private authService: AuthService,
@@ -22,20 +22,10 @@ export class LoginPageComponent {
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
     });
-    // const username = "Netanel Kvyatek";
-    // const password = "Nkvyatek83";
-    // this.authService.login(username, password)
-    // .pipe(take(1))
-    // .subscribe(allowed => {
-    //   if (allowed) {
-    //     this.router.navigate(['/admin']);
-    //   } else {
-    //     console.log('error');
-    //   }
-    // });
   }
 
   onSubmit(): void {
+    this.loading = true;
     if (this.signInForm.valid) {
       console.log('Form Submitted:', this.signInForm.value);
       this.authService
@@ -45,6 +35,8 @@ export class LoginPageComponent {
         )
         .pipe(take(1))
         .subscribe((allowed) => {
+          this.loading = false;
+
           if (allowed) {
             this.router.navigate(['/admin']);
           } else {
