@@ -1,4 +1,20 @@
 <ng-container *ngIf="!isLoading; else loading">
+<!-- Filter -->
+  <mat-form-field>
+    <mat-label>Column</mat-label>
+    <mat-select [formControl]="filterType">
+     
+      <mat-option *ngFor="let topping of displayedColumns" [value]="topping">{{topping}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Filter...</mat-label>
+    <input
+      matInput
+      [formControl]="filterValue"
+    />
+  </mat-form-field>
+
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
     <!-- Define columns for data -->
     <ng-container
@@ -16,15 +32,16 @@
         <mat-form-field *ngIf="element.editing === true" appearance="outline">
           <mat-label>{{ column }}</mat-label>
           <input
-            #abc
             matInput
-            [value]="element[column]"
-            (input)="onCellValueChanged(element, column, abc.value)"
+            [formControl]="guestFormControls[column]"
           />
         </mat-form-field>
       </td>
     </ng-container>
-
+    <!-- 
+            #abc
+      [value]="element[column]"
+    (input)="onCellValueChanged(element, column, abc.value)" -->
     <!-- Separate column for Edit button -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
@@ -32,14 +49,14 @@
         <ng-container *ngIf="element.editing === true">
           <button
             mat-button
-            (click)="editRow(element)"
+            (click)="editRow(element, true)"
             matTooltip="Save edited details"
           >
             <mat-icon class="actions-icons__edit">done_outline</mat-icon>
           </button>
           <button
             mat-button
-            (click)="element.editing = !element.editing"
+            (click)="editRow(element, false)"
             matTooltip="Cancel editing"
           >
             <mat-icon class="actions-icons__edit">close_outline</mat-icon>
@@ -48,6 +65,7 @@
         <ng-container *ngIf="element.editing !== true">
           <button
             mat-button
+            [disabled]="editIsOn"
             (click)="revertChanges(element)"
             matTooltip="Restor original guest details"
           >
@@ -55,7 +73,8 @@
           </button>
           <button
             mat-button
-            (click)="element.editing = !element.editing"
+            [disabled]="editIsOn"
+            (click)="startEditGuestDetails(element)"
             matTooltip="Edit guest details"
           >
             <mat-icon class="actions-icons__edit">edit_outline</mat-icon>
