@@ -41,4 +41,9 @@ export class AuthService {
   getUserRole(): string {
     return ''
   }
+
+  getCurrentUserName(): string {
+    // save user on login and return name by lang
+    return 'dadad'
+  }
 }

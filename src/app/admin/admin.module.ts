@@ -20,6 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { TranslocoRootModule } from '../transloco-root.module';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { MatSelectModule } from '@angular/material/select';
     AdminRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    TranslocoRootModule,
     MatDividerModule,
     MatToolbarModule,
     MatIconModule,

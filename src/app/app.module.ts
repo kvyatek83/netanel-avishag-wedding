@@ -10,6 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EditFieldComponent } from './components/edit-field/edit-field.component';
+import { TranslocoRootModule } from './transloco-root.module';
 
 // Add transloco
 @NgModule({
@@ -26,6 +27,7 @@ import { EditFieldComponent } from './components/edit-field/edit-field.component
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
+    TranslocoRootModule,
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

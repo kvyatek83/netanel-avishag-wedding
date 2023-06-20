@@ -1,0 +1,37 @@
+{
+    "appName": "והיו לאחד",
+    "hello": "שלום {{value}}",
+    "login": {
+        "username": "הכנס/י את שם המשתמש שלך",
+        "password": "הכנס/י את הסיסמא שלך",
+        "submit": "התחבר/י"
+    },
+    "guest": {
+        "calendar": "הוספה ליומן",
+        "waze": "ניווט לאולם"
+    },
+    "filter": {
+        "filterType": "הפעלת סינון לפי...",
+        "filterValue": "הכנס/י ערך סינון..."
+    },
+    "columns": {
+        "confirmation": "מגיע",
+        "email": "אימייל",
+        "hebrewname": "שם בעברית",
+        "participants": "כמות משתתפים",
+        "phone": "מספר טלפון",
+        "transport": "הסעה",
+        "username": "שם משתמש",
+        "actions": "פעולות"
+    },
+    "actionsBtns": {
+        "edit": "עריכת פרטי אורח",
+        "save": "שמירת פרטי אורח",
+        "cancel": "ביטול מצב עריכה",
+        "revert": "ביטול שינויים עבור אורח"
+    },
+    "booleans": {
+        "true": "Yes",
+        "false": "No"
+    }
+}

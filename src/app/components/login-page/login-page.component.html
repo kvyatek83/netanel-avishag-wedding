@@ -1,13 +1,13 @@
-<div class="container">
+<div class="container" *transloco="let t; read: 'login'" [class.rtl]="isRtl">
   <div class="top"></div>
   <div class="bottom"></div>
   <div class="center">
     <img src="./assets/login-background.png" class="photo" />
     <form class="login-form" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-      <input type="text" placeholder="username" formControlName="username" />
+      <input type="text" [placeholder]="t('username')" formControlName="username" />
       <input
         type="password"
-        placeholder="password"
+        [placeholder]="t('password')"
         formControlName="password"
       />
       <button
@@ -15,7 +15,7 @@
         type="submit"
         [disabled]="signInForm.invalid"
       >
-        Sign In
+      {{ t('submit') }}
       </button>
     </form>
   </div>

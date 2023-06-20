@@ -1,0 +1,37 @@
+{
+    "appName": "BeOne",
+    "hello": "Hello {{value}}",
+    "login": {
+        "username": "Enter your user name",
+        "password": "Enter your password",
+        "submit": "Login "
+    },
+    "guest": {
+        "calendar": "Add to calendar",
+        "waze": "Navigation"
+    },
+    "filter": {
+        "filterType": "Filter by...",
+        "filterValue": "Enter your filter..."
+    },
+    "columns": {
+        "confirmation": "Confirmation",
+        "email": "Email",
+        "hebrewname": "Hebrew Name",
+        "participants": "Participants",
+        "phone": "Phone Number",
+        "transport": "Transport",
+        "username": "User Name",
+        "actions": "Actions"
+    },
+    "actionsBtns": {
+        "edit": "Edit guest details",
+        "save": "Save edited details",
+        "cancel": "Cancel editing",
+        "revert": "Restor original guest details"
+    },
+    "booleans": {
+        "true": "Yes",
+        "false": "No"
+    }
+}

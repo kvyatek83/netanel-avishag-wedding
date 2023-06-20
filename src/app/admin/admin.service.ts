@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { Observable, catchError, map, of, take, tap } from 'rxjs';
 
 export interface WeddingGuest {
-  auth: boolean;
-  token: string;
   confirmation: boolean;
   email?: string;
   hebrewname: string;
