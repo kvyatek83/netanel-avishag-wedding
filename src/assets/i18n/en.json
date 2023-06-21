@@ -33,5 +33,13 @@
     "booleans": {
         "true": "Yes",
         "false": "No"
+    },
+    "loadFiles": {
+        "load": "Load your list",
+        "dnd": "Drag and drop file here",
+        "or": "Or",
+        "browse": "Browse for file",
+        "submit": "Submit",
+        "cancel": "Cancel"
     }
 }

@@ -11,7 +11,8 @@ export interface WeddingGuest {
   participants: string;
   phone: string;
   transport: boolean;
-  username: string;
+  username?: string;
+  role?: string;
   editing?: boolean;
 }
 

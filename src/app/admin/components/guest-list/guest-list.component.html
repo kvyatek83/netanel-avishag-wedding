@@ -13,10 +13,12 @@
       <mat-label>{{ t('filter.filterValue') }}</mat-label>
       <input matInput [formControl]="filterValue" />
     </mat-form-field>
+
+    <button mat-raised-button (click)="openUploadFile()">Open dialog without animation</button>
   </div>
 
   <ng-container *transloco="let t; read: 'columns'">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <table mat-table [dataSource]="dataSource" matSort>
       <!-- Define columns for data -->
       <ng-container
         *ngFor="let column of displayedColumns"
@@ -28,7 +30,7 @@
           *matCellDef="let element"
           [class.cell-changed]="isValueChanged(element, column)"
         >
-          <span *ngIf="element.editing !== true">{{ element[column] }}</span>
+          <span *ngIf="element.editing !== true">{{ element[column] !== undefined ? element[column] : '--'}}</span>
           <!-- build my component for edit cells -->
           <mat-form-field *ngIf="element.editing === true" appearance="outline">
             <mat-label>{{ column }}</mat-label>
@@ -112,7 +114,7 @@
     </table>
   </ng-container>
   <mat-paginator
-    [pageSizeOptions]="[1, 2]"
+    [pageSizeOptions]="[10, 20]"
     aria-label="Select page of users"
   ></mat-paginator>
 </ng-container>

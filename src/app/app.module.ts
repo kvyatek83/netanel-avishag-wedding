@@ -11,8 +11,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EditFieldComponent } from './components/edit-field/edit-field.component';
 import { TranslocoRootModule } from './transloco-root.module';
+import { MatDialogModule } from '@angular/material/dialog';
 
-// Add transloco
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,6 +28,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     TranslocoRootModule,
+    MatDialogModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

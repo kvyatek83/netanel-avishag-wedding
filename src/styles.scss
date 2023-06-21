@@ -6,3 +6,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .rtl {
     direction: rtl;
 }
+
+.dialog-responsive {
+    width: 500px;
+  }
+  
+  @media only screen and (max-width: 760px) {
+    .dialog-responsive {
+        width: 300px;
+    }
+  }

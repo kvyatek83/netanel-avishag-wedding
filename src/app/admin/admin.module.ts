@@ -21,11 +21,16 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoRootModule } from '../transloco-root.module';
+import { DndDirective } from '../directives/dnd.directive';
+import { LoadFileComponent } from '../components/load-file/load-file.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AdminComponent,
-    GuestListComponent
+    GuestListComponent,
+    LoadFileComponent,
+    DndDirective
   ],
   imports: [
     CommonModule,
@@ -49,7 +54,8 @@ import { TranslocoRootModule } from '../transloco-root.module';
     MatInputModule,
     MatTooltipModule,
     MatCheckboxModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule
   ]
 })
 export class AdminModule { }
