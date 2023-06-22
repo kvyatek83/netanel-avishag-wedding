@@ -34,6 +34,11 @@ export class GuestListComponent {
   filterValue = new FormControl('');
   filterType = new FormControl('');
 
+  totalConfirmation: number | undefined;
+  totalTransport: number | undefined;
+  totalParticipants: number | undefined;
+  totalGuests: number | undefined;
+  
   constructor(private adminService: AdminService, public dialog: MatDialog) {
     this.adminService
       .getAllGuests()
@@ -59,11 +64,8 @@ export class GuestListComponent {
 
 
           this.filterType.setValue(this.displayedColumns[0]);
-          
-          setTimeout(() => {
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-          }, 0);
+
+          this.reloadGuestListData(users)
         } else {
           console.log('No guests');
         }
@@ -196,16 +198,30 @@ export class GuestListComponent {
 
         console.log(cloneGuestList);
         
-        this.dataSource = new MatTableDataSource(cloneGuestList);
-        setTimeout(() => {
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        }, 0);
+        this.reloadGuestListData(cloneGuestList)
+        // this.dataSource = new MatTableDataSource(cloneGuestList);
+        // setTimeout(() => {
+        //   this.dataSource.paginator = this.paginator;
+        //   this.dataSource.sort = this.sort;
+        // }, 0);
       }
     });
   }
 
   openMessageBot(): void {
     // Dailog for guest messages
+  }
+
+  private reloadGuestListData(guests: WeddingGuest[]): void {
+    this.dataSource = new MatTableDataSource(guests);
+          this.totalConfirmation = this.dataSource.data.filter(guest => guest.confirmation === true).length;
+          this.totalTransport = this.dataSource.data.filter(guest => guest.transport === true).length;
+          this.totalParticipants = this.dataSource.data.reduce((curGuest, nextGuest) =>  curGuest + Number(nextGuest.participants), 0);
+          this.totalGuests = this.dataSource.data.length;
+          
+          setTimeout(() => {
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          }, 0);
   }
 }

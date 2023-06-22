@@ -24,13 +24,15 @@ import { TranslocoRootModule } from '../transloco-root.module';
 import { DndDirective } from '../directives/dnd.directive';
 import { LoadFileComponent } from '../components/load-file/load-file.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { BooleanSpanComponent } from '../components/boolean-span/boolean-span.component';
 
 @NgModule({
   declarations: [
     AdminComponent,
     GuestListComponent,
     LoadFileComponent,
-    DndDirective
+    DndDirective,
+    BooleanSpanComponent
   ],
   imports: [
     CommonModule,

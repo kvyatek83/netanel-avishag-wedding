@@ -41,5 +41,10 @@
         "browse": "Browse for file",
         "submit": "Submit",
         "cancel": "Cancel"
+    },
+    "guestListSum": {
+        "confirm": "Total confirm: {{confirm}} / {{total}}",
+        "transport": "Total transport: {{value}}",
+        "participants": "Total participants {{value}}"
     }
 }

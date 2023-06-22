@@ -31,8 +31,8 @@
         "revert": "ביטול שינויים עבור אורח"
     },
     "booleans": {
-        "true": "Yes",
-        "false": "No"
+        "true": "כן",
+        "false": "לא"
     },
     "loadFiles": {
         "load": "טעינת רשימת אורחים",
@@ -41,5 +41,10 @@
         "browse": "חיפוש במחשב שלך",
         "submit": "אישור",
         "cancel": "ביטול"
+    },
+    "guestListSum": {
+        "confirm": "כמות מאשרים: {{confirm}} / {{total}}",
+        "transport": "מעוניינים בהסעה: {{value}}",
+        "participants": "כמות משתתפים {{value}}"
     }
 }

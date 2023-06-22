@@ -1,0 +1,7 @@
+<span *transloco="let t; read: 'booleans'">{{
+  spanValue !== undefined
+    ? spanValue === true || spanValue === false
+      ? t(spanValue.toString())
+      : spanValue
+    : "--"
+}}</span>
