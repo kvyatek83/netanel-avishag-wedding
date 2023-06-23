@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "node app.js",
+    "start": "node createUsersTable.js && node createAdmin.js && node app.js",
     "startWedding": "ng serve --port 12345 --proxy-config proxy.conf.json",
     "deploy": "ng build --configuration production",
     "build": "ng build",
