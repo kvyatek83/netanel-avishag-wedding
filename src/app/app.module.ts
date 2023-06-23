@@ -9,20 +9,13 @@ import { LoginPageComponent } from './components/login-page/login-page.component
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { EditFieldComponent } from './components/edit-field/edit-field.component';
 import { TranslocoRootModule } from './transloco-root.module';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
     HomeComponent,
-    EditFieldComponent
   ],
   imports: [
     BrowserModule,
@@ -30,13 +23,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
     BrowserAnimationsModule,
     TranslocoRootModule,
-    MatDialogModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

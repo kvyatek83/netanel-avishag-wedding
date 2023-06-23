@@ -6,7 +6,8 @@
     "start": "node createUsersTable.js && node createAdmin.js && node app.js",
     "startWedding": "ng serve --port 12345 --proxy-config proxy.conf.json",
     "deploy": "ng build --configuration production",
-    "build": "ng build",
+    "analyze": "ng build --configuration production --source-map && npx source-map-explorer dist/*.js",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -30,7 +31,6 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.2.0",
     "papaparse": "^5.4.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
@@ -50,6 +50,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "source-map-explorer": "^2.5.3",
     "typescript": "~4.8.2"
   }
 }

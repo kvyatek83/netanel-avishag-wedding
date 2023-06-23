@@ -6,7 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { LoadFileComponent } from 'src/app/components/load-file/load-file.component';
+import { LoadFileComponent } from 'src/app/admin/components/load-file/load-file.component';
 import { v4 } from 'uuid';
 
 @Component({
