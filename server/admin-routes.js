@@ -24,7 +24,7 @@ router.get("/admin/get-all-guests", verifyToken, checkRole("admin"), async (req,
   }));
 });
 
-router.get("/admin/download", async (req, res) => {
+router.get("/admin/download", verifyToken, checkRole("admin"), async (req, res) => {
   const fileName = req.body.filename || "netanel-avishag-wedding.csv";
   const columns = req.body.columns || [
     "שם",
