@@ -1,0 +1,22 @@
+<ng-container [ngSwitch]="controlType" *transloco="let t; read: 'columns'">
+    <div *ngSwitchCase="'string'">
+        <mat-form-field [appearance]="theme">
+              <mat-label>{{ t(label) }}</mat-label>
+              <input matInput [formControl]="externalFormControl" />
+            </mat-form-field>
+    </div>
+    <ng-container *ngSwitchCase="'boolean'">
+        <ng-container *transloco="let t">
+            <mat-form-field [appearance]="theme">
+                <mat-label>{{ t("columns." + label) }}</mat-label>
+                <mat-select [formControl]="externalFormControl" required>
+                  <mat-option *ngFor="let bool of [true, false]" [value]="bool">
+                    {{ t("booleans." + bool.toString()) }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchDefault>FORM 3</ng-container>
+</ng-container>
+

@@ -25,6 +25,7 @@ import { DndDirective } from '../directives/dnd.directive';
 import { LoadFileComponent } from '../components/load-file/load-file.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BooleanSpanComponent } from '../components/boolean-span/boolean-span.component';
+import { GuestFieldComponent } from '../components/guest-field/guest-field.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { BooleanSpanComponent } from '../components/boolean-span/boolean-span.co
     GuestListComponent,
     LoadFileComponent,
     DndDirective,
-    BooleanSpanComponent
+    BooleanSpanComponent,
+    GuestFieldComponent
   ],
   imports: [
     CommonModule,

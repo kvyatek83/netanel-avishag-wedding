@@ -86,24 +86,25 @@ export class GuestListComponent {
           data: WeddingGuest,
           filterValue: string
         ): boolean => {
-          // const a = (data as any)[type];
-          // if (a typeof string) {
-
-          // } else if (a typeof Boolean) {
-          //   a
-          // }
-          return (data as any)[type].toLowerCase().includes(filterValue);
+          if (filterValue === 'true' || filterValue === 'false') {
+            const val = filterValue === 'true' ? true : false;
+            return (data as any)[type] === val;
+          } else {
+            return (data as any)[type].toLowerCase().includes(filterValue);
+          }
         };
       }
     });
 
     this.filterValue.valueChanges.subscribe((value) => {
-      if (value !== null) {
-        this.dataSource.filter = value.trim().toLowerCase();
+      if (value === null || value === undefined) {
+        value = '';
+      }
+
+      this.dataSource.filter = value.toString().trim().toLowerCase();
         if (this.dataSource.paginator) {
           this.dataSource.paginator.firstPage();
         }
-      }
     });
   }
 
@@ -155,9 +156,12 @@ export class GuestListComponent {
   }
 
   isAllSelected() {
+    // Need more tests
+    const a =  JSON.stringify(this.dataSource.filteredData) === JSON.stringify(this.selection.selected)
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
-    return numSelected === numRows;
+    return a;
+    // return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */

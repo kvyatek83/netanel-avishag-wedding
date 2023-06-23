@@ -19,7 +19,8 @@ export class GuestComponent implements OnInit {
   eventLocation: string = 'Atura';
 
   calendarLink: string | undefined;
-  wazeLink = 'https://waze.com/ul?q=1600%20Amphitheatre%20Parkway,%20Mountain%20View,%20CA';
+  weddingPlace = '%D7%90%D7%98%D7%95%D7%A8%D7%94%20-%20%D7%91%D7%99%D7%AA%20%D7%9C%D7%90%D7%A8%D7%95%D7%A2%D7%99%D7%9D';
+  wazeLink = `https://www.waze.com/ul?q=${this.weddingPlace}&navigate=yes`;
 
   private userUuid: string | null | undefined;
 
