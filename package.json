@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node app.js",
     "startWedding": "ng serve --port 12345 --proxy-config proxy.conf.json",
+    "deploy": "ng build --configuration production",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
