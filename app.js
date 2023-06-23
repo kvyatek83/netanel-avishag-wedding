@@ -20,7 +20,8 @@ app.use('/api', adminRoutes);
 app.use('/api', guestRoutes);
 app.use('/api', generalRoutes);
 
-app.get('/*', (req, res) => res.sendFile(path.join(__dirname)));
+app.get('/*', (req, res) => res.sendFile(path.join(__dirname + '/dist/netanel-avishag-wedding/index.html')));
+
 
 
 // TWILIO send message
