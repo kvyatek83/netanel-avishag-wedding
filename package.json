@@ -7,7 +7,7 @@
     "startWedding": "ng serve --port 12345 --proxy-config proxy.conf.json",
     "deploy": "ng build --configuration production",
     "analyze": "ng build --configuration production --source-map && npx source-map-explorer dist/*.js",
-    "verccel": "ng build --configuration production && node createUsersTable.js && node createAdmin.js && node app.js", 
+    "vercel": "ng build --configuration production && node createUsersTable.js && node createAdmin.js && node app.js", 
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
