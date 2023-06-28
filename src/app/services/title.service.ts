@@ -18,7 +18,6 @@ export class TitleService {
     private authService: AuthService
   ) {}
 
-  // Use transloco 
   init() {
     combineLatest([
       this.router.events
@@ -32,13 +31,14 @@ export class TitleService {
         filter((route) => route.outlet === 'primary'),
         mergeMap((route) => route.data)
       ),
-      this.translocoService.selectTranslate('appName')
+      this.translocoService.selectTranslate('appName'),
+      this.authService.guestDetails$
     ])
-      .subscribe(([data, appName]) => {
+      .subscribe(([data, appName, guest]) => {
         // const currentPage = data['title'];
         let title
-        if (this.authService.getCurrentUserName()) {
-          const helloGuest = this.translocoService.translate('hello', { value: this.authService.getCurrentUserName()});
+        if (guest) {
+          const helloGuest = this.translocoService.translate('hello', { value: guest.hebrewname });
           title = `${appName} | ${helloGuest}`
         } else {
           title = appName;

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import * as Papa from 'papaparse';
 import { Subject, takeUntil } from 'rxjs';
 import { LanguageService } from 'src/app/services/lang.service';
@@ -23,15 +23,27 @@ interface WeddingGuest {
   styleUrls: ['./load-file.component.scss'],
 })
 export class LoadFileComponent implements OnDestroy {
+  private readonly hebrewHeadersMap: Map<string, string> = new Map<string, string>([
+    ['שם', 'hebrewname'],
+    ['מספר משתתפים', 'participants'],
+    ['מספר טלפון', 'phone'],
+    ['מאושר הגעה', 'confirmation'],
+    ['הסעה', 'transport'],
+  ]);
+
+  private readonly hebrewBooleanMap: Map<string, boolean> = new Map<string, boolean>([
+    ['לא', false],
+    ['כן', true],
+  ]);
+
   newGuestList: WeddingGuest[] | undefined;
   files: any[] = [];
   isRtl = false;
+  doneUploadFiles = true;
 
   private destroy$: Subject<void> = new Subject();
 
-  constructor(
-    private languageService: LanguageService
-  ) {
+  constructor(private languageService: LanguageService) {
     this.languageService.rtl$.pipe(takeUntil(this.destroy$)).subscribe(rtl => this.isRtl = rtl);
   }
 
@@ -71,6 +83,7 @@ export class LoadFileComponent implements OnDestroy {
   uploadFilesSimulator(index: number) {
     setTimeout(() => {
       if (index === this.files.length) {
+        this.doneUploadFiles = true;
         return;
       } else {
         const progressInterval = setInterval(() => {
@@ -79,6 +92,8 @@ export class LoadFileComponent implements OnDestroy {
             this.uploadFilesSimulator(index + 1);
           } else {
             this.files[index].progress += 5;
+
+            
           }
         }, 200);
       }
@@ -94,6 +109,7 @@ export class LoadFileComponent implements OnDestroy {
       item.progress = 0;
       this.files.push(item);
     }
+    this.doneUploadFiles = false;
     this.uploadFilesSimulator(0);
     this.onFileSelect(files);
   }
@@ -114,10 +130,7 @@ export class LoadFileComponent implements OnDestroy {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
-
-
-
-  onFileSelect(files: any) {
+  onFileSelect(files: any): void {
     const file = files[0];
     const fileReader = new FileReader();
 
@@ -130,16 +143,14 @@ export class LoadFileComponent implements OnDestroy {
     } else if (file.type === 'application/json') {
       fileReader.readAsText(file);
       fileReader.onload = () => {
-        const a = JSON.parse(fileReader.result as string);
-        console.log(a);
-        
+        this.newGuestList = JSON.parse(fileReader.result as string)
       };
     } else {
       alert('Invalid file format. Please select a CSV or JSON file.');
     }
   }
 
-  private parseCSV(csvData: string) {
+  private parseCSV(csvData: string): void {
     console.log(csvData);
     // replace hebrew strings to file format
     
@@ -147,8 +158,6 @@ export class LoadFileComponent implements OnDestroy {
       header: true,
       complete: (result) => {
         this.newGuestList = [];
-        // const a = result.data;
-        // console.log(a);
         result.data.forEach((row: any) => {
           const newObj: any= {};
           Object.entries(row).forEach(([key, value]) => {
@@ -162,7 +171,7 @@ export class LoadFileComponent implements OnDestroy {
             (newObj as WeddingGuest).transport = false;
           }
           if ((newObj as WeddingGuest).participants === undefined) {
-            (newObj as WeddingGuest).participants = "15";
+            (newObj as WeddingGuest).participants = "1";
           }
           if ((newObj as WeddingGuest).role === undefined) {
             (newObj as WeddingGuest).role = "guest";
@@ -170,28 +179,12 @@ export class LoadFileComponent implements OnDestroy {
 
           this.newGuestList?.push(newObj);
         })
-        console.log(this.newGuestList);
-        
       },
       error: (error: any) => {
         console.error('Error parsing CSV:', error);
       },
     });
   }
-
-  hebrewHeadersMap: Map<string, string> = new Map<string, string>([
-    ['שם', 'hebrewname'],
-    ['מספר משתתפים', 'participants'],
-    ['מספר טלפון', 'phone'],
-    ['מאושר הגעה', 'confirmation'],
-    ['הסעה', 'transport'],
-  ]);
-
-  hebrewBooleanMap: Map<string, boolean> = new Map<string, boolean>([
-    ['לא', false],
-    ['כן', true],
-  ]);
-
   private parseHebrewHeader(value: string): string {
     return this.hebrewHeadersMap.get(value) ?? value
   }
@@ -206,7 +199,6 @@ export class LoadFileComponent implements OnDestroy {
   }
 
   private parseHebewValue(value: string): string | boolean | undefined{
-    // Dont forget phome number
     if (this.hebrewBooleanMap.get(value) !== undefined ) {
       return this.hebrewBooleanMap.get(value)
     } if(value.includes('="0') || value.charAt(0) == '+' || value.includes('05')) {

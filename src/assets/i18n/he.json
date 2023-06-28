@@ -6,10 +6,6 @@
         "password": "הכנס/י את הסיסמא שלך",
         "submit": "התחבר/י"
     },
-    "guest": {
-        "calendar": "הוספה ליומן",
-        "waze": "ניווט לאולם"
-    },
     "filter": {
         "filterType": "הפעלת סינון לפי...",
         "filterValue": "הכנס/י ערך סינון..."
@@ -46,5 +42,9 @@
         "confirm": "כמות מאשרים: {{confirm}} / {{total}}",
         "transport": "מעוניינים בהסעה: {{value}}",
         "participants": "כמות משתתפים {{value}}"
+    },
+    "guestPage": {
+        "waze": "ניווט לאולם",
+        "googleCalendar": "הוספה ליומן"
     }
 }

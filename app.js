@@ -67,12 +67,8 @@ app.get('/*', (req, res) => res.sendFile(path.join(__dirname + '/dist/netanel-av
 
 // Start the server
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3322;
 
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-} else {
-  module.exports = app;
-}
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

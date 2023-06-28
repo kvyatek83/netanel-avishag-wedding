@@ -11,6 +11,22 @@ body {
 
 .rtl {
   direction: rtl;
+
+  .mat-mdc-select-value {
+    text-align: right !important;
+  }
+
+  .mat-mdc-option {
+    direction: rtl !important;
+  }
+
+//   .mat-form-field-label, .mat-select-value{text-align: right}
+// .mat-option { direction: rtl; }
+// .mat-option-text {margin-right: 10px;text-align: right; }
+.mdc-list-item__primary-text {
+    margin-right: 0;
+    margin-left: auto;
+}
 }
 
 .dialog-responsive {

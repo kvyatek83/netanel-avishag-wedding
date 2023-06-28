@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth.guard';
-import { HomeComponent } from './components/home/home.component';
 import { LoginPageComponent } from './components/login-page/login-page.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent, data: { title: 'Home' } },
   { path: 'login', component: LoginPageComponent, data: { title: 'Login' } },
   {
     path: 'guest',
@@ -16,8 +14,8 @@ const routes: Routes = [
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
     canActivate: [AuthGuard]
   },
-  { path: '', redirectTo: 'home', pathMatch: 'full'},
-  { path: '**', redirectTo: 'home' },
+  { path: '', redirectTo: 'guest', pathMatch: 'full'},
+  { path: '**', redirectTo: 'guest' },
 ];
 
 

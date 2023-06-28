@@ -53,6 +53,7 @@
     align-items: center;
     border: dashed 1px #979797;
     margin-bottom: 1rem;
+    gap: 10px;
 
     .delete {
       display: flex;
@@ -81,6 +82,7 @@
 
     .info {
       width: 100%;
+      margin: 4px 0;
     }
   }
 }

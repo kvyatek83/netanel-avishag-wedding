@@ -84,6 +84,20 @@ module.exports = {
     //     }
       
     //     return users[userIndex];
-    // }
+    // },
+    getWeddingDetails() {
+       return {
+        wazeLink: `https://www.waze.com/ul?q=${process.env.WAZE_ADDRESS || '%D7%90%D7%98%D7%95%D7%A8%D7%94%20-%20%D7%91%D7%99%D7%AA%20%D7%9C%D7%90%D7%A8%D7%95%D7%A2%D7%99%D7%9D'}&navigate=yes`,
+        eventName: process.env.EVENT_NAME || 'אבישג ונתנאל מתחתנים',
+        weddingYear: Number(process.env.WEDDING_YEAR) || 2023,
+        weddingMonth: Number(process.env.WEDDING_MONTH) || 10,
+        weddingDay: Number(process.env.WEDDING_DAY) || 10,
+        weddingHour: Number(process.env.WEDDING_HOUE) || 18,
+        weddingMinute: Number(process.env.WEDDING_MINUTE) || 30,
+        weddingDetails: Number(process.env.WEDDING_DETAILS) || '',
+        weddingDuration: process.env.WEDDING_DURATION || 330,
+        weddingLocation: process.env.WEDDING_LOCATION || 'אטורה-בית לאירועים',
+       };
+    },
       
 }

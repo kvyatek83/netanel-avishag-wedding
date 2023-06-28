@@ -6,7 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { JwtInterceptor } from './jwt.interceptor';
 import { LoginPageComponent } from './components/login-page/login-page.component';
-import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslocoRootModule } from './transloco-root.module';
@@ -15,7 +14,6 @@ import { TranslocoRootModule } from './transloco-root.module';
   declarations: [
     AppComponent,
     LoginPageComponent,
-    HomeComponent,
   ],
   imports: [
     BrowserModule,

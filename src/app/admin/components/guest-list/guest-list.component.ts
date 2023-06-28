@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { AdminService, WeddingGuest } from '../../admin.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,13 +8,16 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { LoadFileComponent } from 'src/app/admin/components/load-file/load-file.component';
 import { v4 } from 'uuid';
+import { Subject, catchError, of, take, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import { LanguageService } from 'src/app/services/lang.service';
 
 @Component({
   selector: 'app-guest-list',
   templateUrl: './guest-list.component.html',
   styleUrls: ['./guest-list.component.scss'],
 })
-export class GuestListComponent {
+export class GuestListComponent implements OnDestroy {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
   @ViewChild(MatSort)
@@ -26,6 +29,7 @@ export class GuestListComponent {
 
   originalGuestsState: WeddingGuest[] = [];
 
+  isRtl = false;
   isLoading = true;
   rowDef: string[] = [];
 
@@ -38,45 +42,69 @@ export class GuestListComponent {
   totalTransport: number | undefined;
   totalParticipants: number | undefined;
   totalGuests: number | undefined;
+
+  private destroy$: Subject<void> = new Subject();
   
-  constructor(private adminService: AdminService, public dialog: MatDialog) {
+  constructor(
+    private adminService: AdminService,
+    public dialog: MatDialog,
+    private router: Router,
+    private languageService: LanguageService
+  ) {
+    this.languageService.rtl$.pipe(takeUntil(this.destroy$)).subscribe(rtl => this.isRtl = rtl);
     this.adminService
       .getAllGuests()
-      .pipe()
-      .subscribe((users) => {
-        console.log(users);
-
-        if (users.length > 0) {
-          // this.displayedColumns = [...Object.keys(users[0])];
+      .pipe(
+        take(1),
+        catchError((error) => {
+          if (error.status === 403 || error.status === 500) {
+            console.log('Please login');
+            this.router.navigate(['/login']);
+          }
+          return of([]);
+        })
+      )
+      .subscribe((users: WeddingGuest[]) => {
+        if (users?.length > 0) {
           this.originalGuestsState = JSON.parse(JSON.stringify(users));
           this.displayedColumns = [
-            ...Object.keys(users[0]).filter((col) => col !== 'id'),
+            ...Object.keys(users[0]).filter((col) => col !== 'id').sort((curr, next) => curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0),
           ];
+          console.log(JSON.parse(JSON.stringify(users)));
+          console.log(Object.keys(users[0]));
+          console.log(this.displayedColumns);
+          
           this.dataSource = new MatTableDataSource(users);
 
           this.rowDef = [
             ...Object.keys(users[0]).filter((col) => col !== 'id'),
             'actions',
           ];
+
           this.isLoading = false;
 
           this.initFilter();
-
-
           this.filterType.setValue(this.displayedColumns[0]);
 
-          this.reloadGuestListData(users)
+          this.reloadGuestListData(users);
         } else {
           console.log('No guests');
         }
       });
   }
 
+  ngOnDestroy(): void {
+     this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   isValueChanged(guest: WeddingGuest, column: string): boolean {
     const originalGuestDetails = this.originalGuestsState.find(
       (user) => user.id === guest.id
     );
-    return originalGuestDetails ? (guest as any)[column] !== (originalGuestDetails as any)[column] : true;
+    return originalGuestDetails
+      ? (guest as any)[column] !== (originalGuestDetails as any)[column]
+      : true;
   }
 
   initFilter(): void {
@@ -102,9 +130,9 @@ export class GuestListComponent {
       }
 
       this.dataSource.filter = value.toString().trim().toLowerCase();
-        if (this.dataSource.paginator) {
-          this.dataSource.paginator.firstPage();
-        }
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     });
   }
 
@@ -157,7 +185,9 @@ export class GuestListComponent {
 
   isAllSelected() {
     // Need more tests
-    const a =  JSON.stringify(this.dataSource.filteredData) === JSON.stringify(this.selection.selected)
+    const a =
+      JSON.stringify(this.dataSource.filteredData) ===
+      JSON.stringify(this.selection.selected);
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
     return a;
@@ -171,20 +201,22 @@ export class GuestListComponent {
       return;
     }
 
-    // select only non filterd 
+    // select only non filterd
     this.selection.select(...this.dataSource.filteredData);
   }
 
   openUploadFile(): void {
     const dialogRef = this.dialog.open(LoadFileComponent, {
-      panelClass: "dialog-responsive"
+      panelClass: 'dialog-responsive',
     });
 
     dialogRef.afterClosed().subscribe((users: WeddingGuest[]) => {
       if (users) {
-        let cloneGuestList: WeddingGuest[] = JSON.parse(JSON.stringify(this.dataSource.data));
+        let cloneGuestList: WeddingGuest[] = JSON.parse(
+          JSON.stringify(this.dataSource.data)
+        );
         users.forEach((user: WeddingGuest) => {
-          const guestIndex = this.dataSource.data.findIndex(guest => {
+          const guestIndex = this.dataSource.data.findIndex((guest) => {
             if (user.id) {
               return guest.id === user.id;
             } else if (guest.phone === user.phone) {
@@ -192,17 +224,17 @@ export class GuestListComponent {
               return true;
             }
             return false;
-          })
+          });
           if (guestIndex > -1) {
             cloneGuestList[guestIndex] = user;
           } else {
-            cloneGuestList = [...cloneGuestList, user]
+            cloneGuestList = [...cloneGuestList, user];
           }
-        })
+        });
 
         console.log(cloneGuestList);
-        
-        this.reloadGuestListData(cloneGuestList)
+
+        this.reloadGuestListData(cloneGuestList);
         // this.dataSource = new MatTableDataSource(cloneGuestList);
         // setTimeout(() => {
         //   this.dataSource.paginator = this.paginator;
@@ -218,14 +250,21 @@ export class GuestListComponent {
 
   private reloadGuestListData(guests: WeddingGuest[]): void {
     this.dataSource = new MatTableDataSource(guests);
-          this.totalConfirmation = this.dataSource.data.filter(guest => guest.confirmation === true).length;
-          this.totalTransport = this.dataSource.data.filter(guest => guest.transport === true).length;
-          this.totalParticipants = this.dataSource.data.reduce((curGuest, nextGuest) =>  curGuest + Number(nextGuest.participants), 0);
-          this.totalGuests = this.dataSource.data.length;
-          
-          setTimeout(() => {
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-          }, 0);
+    this.totalConfirmation = this.dataSource.data.filter(
+      (guest) => guest.confirmation === true
+    ).length;
+    this.totalTransport = this.dataSource.data.filter(
+      (guest) => guest.transport === true
+    ).length;
+    this.totalParticipants = this.dataSource.data.reduce(
+      (curGuest, nextGuest) => curGuest + Number(nextGuest.participants),
+      0
+    );
+    this.totalGuests = this.dataSource.data.length;
+
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }, 0);
   }
 }

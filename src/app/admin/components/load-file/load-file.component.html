@@ -106,6 +106,6 @@
     </mat-dialog-content>
     <mat-dialog-actions [align]="'end'">
       <button mat-button mat-dialog-close>{{ t('cancel') }}</button>
-      <button mat-button [mat-dialog-close]="newGuestList" cdkFocusInitial>{{ t('submit') }}</button>
+      <button mat-button [mat-dialog-close]="newGuestList" cdkFocusInitial [disabled]="!newGuestList || !doneUploadFiles">{{ t('submit') }}</button>
     </mat-dialog-actions>
 </div>

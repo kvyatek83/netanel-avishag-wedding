@@ -46,5 +46,9 @@
         "confirm": "Total confirm: {{confirm}} / {{total}}",
         "transport": "Total transport: {{value}}",
         "participants": "Total participants {{value}}"
+    },
+    "guestPage": {
+        "waze": "Open in Waze",
+        "googleCalendar": "Add to Google Calendar"
     }
 }

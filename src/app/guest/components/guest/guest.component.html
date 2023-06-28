@@ -1,13 +1,33 @@
-<p>guest works! {{username}}</p>
-<div class="box">
-    <div class="guest-feature">
-        <img src="./assets/calendar-icon.svg" class="waze-icon">
-        <a [href]="calendarLink" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
-    </div>
-    <div class="guest-feature">
-        <img src="./assets/waze-icon.svg" class="waze-icon">
-        <a [href]="wazeLink">
-            Open address in Waze
-          </a>
-    </div>
-</div>
+<ng-container *ngIf="!isLoading; else loading">
+  <p>{{ guest?.hebrewname }}</p>
+  <div class="box" *transloco="let t; read: 'guestPage'">
+    <a [href]="calendarLink" target="_blank" rel="noopener noreferrer" class="guest-feature">
+      <img src="./assets/calendar-icon.svg" class="waze-icon" />
+      <span>{{ t('googleCalendar') }}</span>
+    </a>
+    <a [href]="wazeLink" class="guest-feature">
+      <img src="./assets/waze-icon.svg" class="waze-icon" />
+      <span>{{ t('waze') }}</span>
+    </a>
+
+    <!-- <div class="guest-feature">
+        <mat-form-field>
+            <input
+              type="number"
+              class="form-control"
+              matInput
+              placeholder="Slab"
+              [formControl]="filterValue">
+          </mat-form-field>
+        <button mat-raised-button color="primary">
+            
+            <span *ngIf="filterValue && filterValue.value &&  filterValue.value > 1">קל, אנחנו שם</span>
+            <span *ngIf="filterValue && filterValue.value &&  filterValue.value === 1">קל, אני שם</span>
+        </button>
+    </div> -->
+
+  </div>
+</ng-container>
+
+<ng-template #loading> <app-loading></app-loading> </ng-template>
+<!-- Add translate -->
