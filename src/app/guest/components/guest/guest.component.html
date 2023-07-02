@@ -1,33 +1,118 @@
 <ng-container *ngIf="!isLoading; else loading">
-  <p>{{ guest?.hebrewname }}</p>
-  <div class="box" *transloco="let t; read: 'guestPage'">
-    <a [href]="calendarLink" target="_blank" rel="noopener noreferrer" class="guest-feature">
-      <img src="./assets/calendar-icon.svg" class="waze-icon" />
-      <span>{{ t('googleCalendar') }}</span>
-    </a>
-    <a [href]="wazeLink" class="guest-feature">
-      <img src="./assets/waze-icon.svg" class="waze-icon" />
-      <span>{{ t('waze') }}</span>
-    </a>
-
-    <!-- <div class="guest-feature">
-        <mat-form-field>
-            <input
-              type="number"
-              class="form-control"
-              matInput
-              placeholder="Slab"
-              [formControl]="filterValue">
-          </mat-form-field>
-        <button mat-raised-button color="primary">
-            
-            <span *ngIf="filterValue && filterValue.value &&  filterValue.value > 1">קל, אנחנו שם</span>
-            <span *ngIf="filterValue && filterValue.value &&  filterValue.value === 1">קל, אני שם</span>
-        </button>
-    </div> -->
-
-  </div>
+  <ng-container *ngIf="guest; else guestNotFound">
+    <div class="guest-page" [class.rtl]="isRtl">
+      <img
+        class="flowers"
+        [ngClass]="isRtl ? 'flowers-img-rtl' : 'flowers-img'"
+        src="./assets/flowers.png"
+      />
+      <div class="guest-page__content" *transloco="let t; read: 'guestPage'">
+        <div class="guest-page__content__wedding-countdown">
+          <app-countdown></app-countdown>
+        </div>
+        <span class="guest-page__content__wedding-date">10.10.23</span>
+        <div class="guest-page__content__wedding-timelines">
+          <div class="guest-page__content__wedding-timelines__timeline time">
+            <span class="guest-page__content__wedding-timelines__timeline__time"
+              >18:30</span
+            >
+            <span class="guest-page__content__wedding-timelines__timeline__time"
+              >19:30</span
+            >
+          </div>
+          <div class="guest-page__content__wedding-timelines__timeline label">
+            <span
+              class="guest-page__content__wedding-timelines__timeline__title"
+              >{{ t("reception") }}</span
+            >
+            <span
+              class="guest-page__content__wedding-timelines__timeline__title"
+              >{{ t("ceremony") }}</span
+            >
+          </div>
+        </div>
+        <span class="guest-page__content__wedding-location">{{
+          t("location")
+        }}</span>
+        <div class="guest-page__content__wedding-user-actions">
+          וואי אני רוצה לבוא אני ועוד ״״
+          <!-- לא רק אני,<mat-slide-toggle>לא יאמן אמרתי 'כן'</mat-slide-toggle> -->
+        </div>
+        <div class="guest-page__content__wedding-buttons">
+          <a
+            [href]="wazeLink"
+            class="guest-page__content__wedding-buttons__guest-feature"
+            [matTooltip]="t('waze')"
+          >
+            <img src="./assets/waze-icon.svg" class="icon" />
+            <!-- <span>{{ t('waze') }}</span> -->
+          </a>
+          <button mat-fab color="primary" [matTooltip]="t('googleCalendar')">
+            <mat-icon>power_settings_new_outline</mat-icon>
+          </button>
+          <a
+            [href]="calendarLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="guest-page__content__wedding-buttons__guest-feature"
+            [matTooltip]="t('googleCalendar')"
+          >
+            <img src="./assets/calendar-icon.svg" class="icon" />
+            <!-- <span>{{ t('googleCalendar') }}</span> -->
+          </a>
+        </div>
+        <!-- <a [href]="calendarLink" target="_blank" rel="noopener noreferrer" class="guest-feature">
+              <img src="./assets/calendar-icon.svg" class="waze-icon" />
+              <span>{{ t('googleCalendar') }}</span>
+            </a>
+            <a [href]="wazeLink" class="guest-feature">
+              <img src="./assets/waze-icon.svg" class="waze-icon" />
+              <span>{{ t('waze') }}</span>
+            </a> -->
+        <!-- <div class="guest-feature">
+                <mat-form-field>
+                    <input
+                      type="number"
+                      class="form-control"
+                      matInput
+                      placeholder="Slab"
+                      [formControl]="filterValue">
+                  </mat-form-field>
+                <button mat-raised-button color="primary">
+      
+                    <span *ngIf="filterValue && filterValue.value &&  filterValue.value > 1">קל, אנחנו שם</span>
+                    <span *ngIf="filterValue && filterValue.value &&  filterValue.value === 1">קל, אני שם</span>
+                </button>
+            </div> -->
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #guestNotFound>
+    <div class="guest-not-found">
+      <div class="guest-not-found__content">
+        <img src="./assets/face.png" />
+        <div class="guest-not-found__content__message">
+          <div class="guest-not-found__content__message__title">
+            <span>YOU ARE TOO SMART TO BE HERE.</span>
+            <br />
+            <span>FOR YOU, FOR US & FOR OUR WEDDING</span>
+          </div>
+          <div class="guest-not-found__content__message__details">
+            <span
+              >PLEASE GO BACK TO THE LINK WE SENT YOU AND CLICK FOR
+              APPROVING</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </ng-container>
 
-<ng-template #loading> <app-loading></app-loading> </ng-template>
+<ng-template #loading>
+  <app-loading></app-loading>
+</ng-template>
 <!-- Add translate -->
+<!-- <img src="./assets/food.png">
+        <img src="./assets/parking.png">
+        <img src="./assets/instegram.png"> -->

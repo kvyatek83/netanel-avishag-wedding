@@ -14,6 +14,12 @@
         "filterType": "Filter by...",
         "filterValue": "Enter your filter..."
     },
+    "dbControl": {
+        "loadTable": "Load guest to list",
+        "downloadRemote": "Download list",
+        "saveToRemote": "Save local changes",
+        "replaceRemote": "Upload new list"
+    },
     "columns": {
         "confirmation": "Confirmation",
         "email": "Email",
@@ -28,7 +34,8 @@
         "edit": "Edit guest details",
         "save": "Save edited details",
         "cancel": "Cancel editing",
-        "revert": "Restor original guest details"
+        "revert": "Restor original guest details",
+        "delete": "Delete guest from list"
     },
     "booleans": {
         "true": "Yes",
@@ -36,6 +43,7 @@
     },
     "loadFiles": {
         "load": "Load your list",
+        "upload": "Upload your list",
         "dnd": "Drag and drop file here",
         "or": "Or",
         "browse": "Browse for file",
@@ -49,6 +57,15 @@
     },
     "guestPage": {
         "waze": "Open in Waze",
-        "googleCalendar": "Add to Google Calendar"
+        "googleCalendar": "Add to Google Calendar",
+        "ceremony": "Hupa ceremony",
+        "reception": "Reception",
+        "location": "Atura events, Mini-Israel"
+    },
+    "timer": {
+        "days": "Days",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "seconds": "Seconds"
     }
 }

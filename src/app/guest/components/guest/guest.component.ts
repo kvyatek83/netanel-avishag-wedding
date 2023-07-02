@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, combineLatest, of, take } from 'rxjs';
+import { Subject, catchError, combineLatest, of, take, takeUntil } from 'rxjs';
 import { AuthService, GuestDetails } from 'src/app/services/auth.service';
+import { LanguageService } from 'src/app/services/lang.service';
 
 interface WeddingDetails {
   wazeLink: string;
@@ -18,13 +19,13 @@ interface WeddingDetails {
   weddingLocation: string;
 }
 
-
 @Component({
   selector: 'app-guest',
   templateUrl: './guest.component.html',
   styleUrls: ['./guest.component.scss'],
 })
-export class GuestComponent implements OnInit {
+export class GuestComponent implements OnInit, OnDestroy {
+  isRtl = false;
   isLoading = false;
   guest: GuestDetails | undefined;
   calendarLink: string | undefined;
@@ -33,14 +34,28 @@ export class GuestComponent implements OnInit {
   // filterValue = new FormControl(1);
 
   private userUuid: string | null | undefined;
+  private destroy$: Subject<void> = new Subject();
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private authService: AuthService,
+    private languageService: LanguageService
+  ) {}
 
   ngOnInit(): void {
-    this.userUuid = this.route.snapshot.paramMap.get('id');    
+    this.languageService.rtl$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rtl) => (this.isRtl = rtl));
+    this.userUuid = this.route.snapshot.paramMap.get('id');
     this.isLoading = true;
 
     setTimeout(() => this.initGuestAndWeddingDetails(), 3000);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initGuestAndWeddingDetails(): void {
@@ -50,7 +65,9 @@ export class GuestComponent implements OnInit {
     } else {
       combineLatest([
         this.http.get<GuestDetails>(`/api/guest/${this.userUuid}`),
-        this.http.get<WeddingDetails>(`/api/guest/${this.userUuid}/wedding-details`),
+        this.http.get<WeddingDetails>(
+          `/api/guest/${this.userUuid}/wedding-details`
+        ),
       ])
         .pipe(
           take(1),
@@ -60,6 +77,7 @@ export class GuestComponent implements OnInit {
             } else if (error.status === 404) {
               // Dispaly error for user -> are you sure the you pressed the currect link? try again
             }
+            this.isLoading = false;
             return of([null, null]);
           })
         )
@@ -98,7 +116,6 @@ export class GuestComponent implements OnInit {
 
     this.wazeLink = wedding.wazeLink;
   }
-
 
   guestConfirmationStatus(): void {
     // amount

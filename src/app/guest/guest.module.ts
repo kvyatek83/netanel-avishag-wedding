@@ -6,12 +6,14 @@ import { LoadingComponent } from '../components/loading/loading.component';
 import { TranslocoRootModule } from '../transloco-root.module';
 import { MaterialModule } from '../material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CountdownComponent } from './components/countdown/countdown.component';
 
 
 @NgModule({
   declarations: [
     GuestComponent,
-    LoadingComponent
+    LoadingComponent,
+    CountdownComponent
   ],
   imports: [
     CommonModule,

@@ -59,11 +59,6 @@ router.get("/admin/download", verifyToken, checkRole("admin"), async (req, res) 
         }
       }
     });
-    // var confirmation = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.confirmation));
-    // var transport = utils.booleanToHebrewBoolean(utils.stringBooleanToBoolean(user.transport));
-    // var phone = utils.wrapPrefixPhoneWithLeadingZeros(user.phone);
-    // return [user.hebrewname, phone, confirmation, user.participants, transport];
-
     return savedKeys;
   });
 
@@ -71,6 +66,28 @@ router.get("/admin/download", verifyToken, checkRole("admin"), async (req, res) 
   return res.download(fileName, () => {
     fs.unlinkSync(fileName);
   });
+});
+
+router.get('/admin/download-db', verifyToken, checkRole("admin"), async(req, res) => {
+  const dbPath = db.getDbPath();
+  res.download(dbPath);
+});
+
+router.post('/admin/replace-db', verifyToken, checkRole("admin"), async(req, res) => {
+  db.overrideUsersInCSV(req.body.users);
+
+  // utils
+  const users = await db.readUsersFromCSV(db.getDbPath());
+  res.status(200).send(users.map(user => {
+    delete user.password;
+    delete user.role;
+    const confirmation = utils.stringBooleanToBoolean(user.confirmation);
+    const transport = utils.stringBooleanToBoolean(user.transport);
+    user.confirmation = confirmation;
+    user.transport = transport;
+    user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
+    return user;
+  }));
 });
 
 module.exports = router;

@@ -8,7 +8,15 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { LoadFileComponent } from 'src/app/admin/components/load-file/load-file.component';
 import { v4 } from 'uuid';
-import { Subject, catchError, of, take, takeUntil } from 'rxjs';
+import {
+  Subject,
+  catchError,
+  filter,
+  of,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { Router } from '@angular/router';
 import { LanguageService } from 'src/app/services/lang.service';
 
@@ -44,14 +52,16 @@ export class GuestListComponent implements OnDestroy {
   totalGuests: number | undefined;
 
   private destroy$: Subject<void> = new Subject();
-  
+
   constructor(
     private adminService: AdminService,
     public dialog: MatDialog,
     private router: Router,
     private languageService: LanguageService
   ) {
-    this.languageService.rtl$.pipe(takeUntil(this.destroy$)).subscribe(rtl => this.isRtl = rtl);
+    this.languageService.rtl$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rtl) => (this.isRtl = rtl));
     this.adminService
       .getAllGuests()
       .pipe(
@@ -65,36 +75,12 @@ export class GuestListComponent implements OnDestroy {
         })
       )
       .subscribe((users: WeddingGuest[]) => {
-        if (users?.length > 0) {
-          this.originalGuestsState = JSON.parse(JSON.stringify(users));
-          this.displayedColumns = [
-            ...Object.keys(users[0]).filter((col) => col !== 'id').sort((curr, next) => curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0),
-          ];
-          console.log(JSON.parse(JSON.stringify(users)));
-          console.log(Object.keys(users[0]));
-          console.log(this.displayedColumns);
-          
-          this.dataSource = new MatTableDataSource(users);
-
-          this.rowDef = [
-            ...Object.keys(users[0]).filter((col) => col !== 'id'),
-            'actions',
-          ];
-
-          this.isLoading = false;
-
-          this.initFilter();
-          this.filterType.setValue(this.displayedColumns[0]);
-
-          this.reloadGuestListData(users);
-        } else {
-          console.log('No guests');
-        }
+        this.initGuestsTable(users);
       });
   }
 
   ngOnDestroy(): void {
-     this.destroy$.next();
+    this.destroy$.next();
     this.destroy$.complete();
   }
 
@@ -105,6 +91,15 @@ export class GuestListComponent implements OnDestroy {
     return originalGuestDetails
       ? (guest as any)[column] !== (originalGuestDetails as any)[column]
       : true;
+  }
+
+  noLocalChangesMade(): boolean {
+    const loacl: WeddingGuest[] = JSON.parse(JSON.stringify(this.dataSource.data));
+    return JSON.stringify(this.originalGuestsState) === JSON.stringify(loacl.map(item => {
+      delete item?.editing;
+      delete item?.deleted;
+      return item;
+    }));
   }
 
   initFilter(): void {
@@ -160,10 +155,18 @@ export class GuestListComponent implements OnDestroy {
     guest.editing = !guest.editing;
   }
 
+  removeGuestFromList(guest: WeddingGuest): void {
+    guest.deleted = true;
+  }
+
   revertChanges(guest: WeddingGuest): void {
     const originalGuestDetails = this.originalGuestsState.find(
       (user) => user.id === guest.id
     );
+
+    if (guest.deleted) {
+      guest.deleted = false
+    }
 
     if (originalGuestDetails) {
       this.displayedColumns.forEach((col) => {
@@ -208,6 +211,9 @@ export class GuestListComponent implements OnDestroy {
   openUploadFile(): void {
     const dialogRef = this.dialog.open(LoadFileComponent, {
       panelClass: 'dialog-responsive',
+      data: {
+        uploadType: 'local',
+      },
     });
 
     dialogRef.afterClosed().subscribe((users: WeddingGuest[]) => {
@@ -246,6 +252,69 @@ export class GuestListComponent implements OnDestroy {
 
   openMessageBot(): void {
     // Dailog for guest messages
+  }
+
+  downloadDb(): void {
+    this.adminService.downloadDb().subscribe((file: Blob) => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(file);
+      link.download = 'guest-list.csv';
+      link.click();
+    });
+  }
+
+  uploadNewFileToDB(): void {
+    const dialogRef = this.dialog.open(LoadFileComponent, {
+      panelClass: 'dialog-responsive',
+      data: {
+        uploadType: 'remote',
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((users: WeddingGuest[]) => !!users),
+        switchMap((users: WeddingGuest[]) => { 
+          this.isLoading = true;
+          return this.adminService.replaceDB(users);
+        })
+      )
+      .subscribe((newGuestList: WeddingGuest[]) => {
+        this.initGuestsTable(newGuestList);
+      });
+  }
+
+  saveListToDB(): void {
+
+  }
+
+  private initGuestsTable(users: WeddingGuest[]): void {
+    if (users?.length > 0) {
+      this.originalGuestsState = JSON.parse(JSON.stringify(users));
+      this.displayedColumns = [
+        ...Object.keys(users[0])
+          .filter((col) => col !== 'id')
+          .sort((curr, next) => curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0
+          ),
+      ];
+
+      this.dataSource = new MatTableDataSource(users);
+
+      this.rowDef = [
+        ...Object.keys(users[0]).filter((col) => col !== 'id'),
+        'actions',
+      ];
+
+      this.isLoading = false;
+
+      this.initFilter();
+      this.filterType.setValue(this.displayedColumns[0]);
+
+      this.reloadGuestListData(users);
+    } else {
+      console.log('No guests');
+    }
   }
 
   private reloadGuestListData(guests: WeddingGuest[]): void {

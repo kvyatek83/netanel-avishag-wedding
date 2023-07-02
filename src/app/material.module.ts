@@ -12,6 +12,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     MatCheckboxModule,
     MatSelectModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSlideToggleModule
   ],
   exports: [
     MatDividerModule,
@@ -42,7 +44,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     MatCheckboxModule,
     MatSelectModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSlideToggleModule
   ]
 })
 export class MaterialModule { }

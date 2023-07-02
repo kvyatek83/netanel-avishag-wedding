@@ -1,0 +1,37 @@
+// @media only screen and (min-width: 650px) {  
+//     .timer {
+//         font-family: Arial, sans-serif;
+//         font-size: 1.6em;
+//         margin: auto;
+//         max-width: 590px;
+//     }  
+// }
+
+// @media only screen and (max-width: 650px) {  
+//     .timer {
+//         font-family: Arial, sans-serif;
+//         font-size: 1.6em;
+//         margin: auto;
+//         max-width: 300px;
+//     }
+// }
+.timer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    .column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .date-value {
+            font-size: 32px;
+            font-family: "Lucida Console", monospace;
+        }
+
+        .date-label {
+            font-size: 14px;
+        }
+    }
+}

@@ -1,0 +1,19 @@
+<div class="timer" [class.rtl]="isRtl" *transloco="let t; read: 'timer'">
+    <div class="column">
+        <span class="date-value"> {{ daysToDday }} </span>
+        <span class="date-label">{{ t('days') }}</span>
+    </div>
+    <div class="column">
+        <span class="date-value"> {{ hoursToDday }} </span>
+        <span class="date-label">{{ t('hours') }}</span>
+    </div>
+    <div class="column">
+        <span class="date-value"> {{ minutesToDday }} </span>
+        <span class="date-label">{{ t('minutes') }}</span>
+    </div>
+    <div class="column">
+        <span class="date-value"> {{ secondsToDday }} </span>
+        <span class="date-label">{{ t('seconds') }}</span>
+    </div>
+  </div>
+  

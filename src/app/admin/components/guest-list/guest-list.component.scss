@@ -14,6 +14,15 @@
   }
 }
 
+.db-control {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  > button {
+    flex: 1;
+  }
+}
+
 // .mat-mdc-select-rtl > .mat-mdc-select-trigger > .mat-mdc-select-value {
 //       text-align: right !important;
 // }
@@ -52,6 +61,10 @@
 
 .cell-changed {
   background-color: #f1bbbb;
+}
+
+.cell-removed {
+  text-decoration: line-through;
 }
 
 .mat-mdc-header-cell {

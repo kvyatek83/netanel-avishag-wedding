@@ -1,4 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as Papa from 'papaparse';
 import { Subject, takeUntil } from 'rxjs';
 import { LanguageService } from 'src/app/services/lang.service';
@@ -15,6 +16,10 @@ interface WeddingGuest {
   username?: string;
   role?: string;
   editing?: boolean;
+}
+
+export interface DialogData {
+  uploadType: 'local' | 'remote';
 }
 
 @Component({
@@ -43,7 +48,7 @@ export class LoadFileComponent implements OnDestroy {
 
   private destroy$: Subject<void> = new Subject();
 
-  constructor(private languageService: LanguageService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, private languageService: LanguageService) {
     this.languageService.rtl$.pipe(takeUntil(this.destroy$)).subscribe(rtl => this.isRtl = rtl);
   }
 
@@ -138,7 +143,19 @@ export class LoadFileComponent implements OnDestroy {
       fileReader.readAsText(file);
       fileReader.onload = () => {
         const csvData = fileReader.result;
-        this.parseCSV(csvData as string);
+        if (this.data.uploadType === 'remote') {
+          Papa.parse(csvData as string, {
+            header: true,
+            complete: (result) => {
+              this.newGuestList = result.data as WeddingGuest[];
+            },
+            error: (error: any) => {
+              console.error('Error parsing CSV:', error);
+            },
+          });
+        } else {
+          this.parseCSV(csvData as string);
+        }
       };
     } else if (file.type === 'application/json') {
       fileReader.readAsText(file);
@@ -151,9 +168,7 @@ export class LoadFileComponent implements OnDestroy {
   }
 
   private parseCSV(csvData: string): void {
-    console.log(csvData);
     // replace hebrew strings to file format
-    
     Papa.parse(csvData, {
       header: true,
       complete: (result) => {

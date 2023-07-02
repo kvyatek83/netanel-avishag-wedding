@@ -1,5 +1,5 @@
 <div *transloco="let t; read: 'loadFiles'" [class.rtl]="isRtl" class="dialog">
-    <h2 mat-dialog-title>{{ t('load') }}</h2>
+    <h2 mat-dialog-title>{{ data.uploadType === 'remote' ? t('upload') : t('load') }}</h2>
     <mat-dialog-content class="mat-typography">
       <div class="container" appDnd (fileDropped)="onFileDropped($event)">
         <input

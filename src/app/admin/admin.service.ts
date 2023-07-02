@@ -14,6 +14,7 @@ export interface WeddingGuest {
   username?: string;
   role?: string;
   editing?: boolean;
+  deleted?: boolean;
 }
 
 @Injectable({
@@ -26,5 +27,13 @@ export class AdminService {
     return this.http
       .get<WeddingGuest[]>(`/api/admin/get-all-guests`)
       .pipe(take(1));
+  }
+
+  downloadDb(): Observable<Blob> {
+    return this.http.get<Blob>('/api/admin/download-db', {responseType: 'blob' as 'json'}).pipe(take(1));
+  }
+
+  replaceDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
+    return this.http.post<WeddingGuest[]>('/api/admin/replace-db', {users: guests}).pipe(take(1));
   }
 }
