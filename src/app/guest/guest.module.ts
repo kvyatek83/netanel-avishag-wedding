@@ -7,13 +7,15 @@ import { TranslocoRootModule } from '../transloco-root.module';
 import { MaterialModule } from '../material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CountdownComponent } from './components/countdown/countdown.component';
+import { ForYourInfoComponent } from './components/for-your-info/for-your-info.component';
 
 
 @NgModule({
   declarations: [
     GuestComponent,
     LoadingComponent,
-    CountdownComponent
+    CountdownComponent,
+    ForYourInfoComponent
   ],
   imports: [
     CommonModule,

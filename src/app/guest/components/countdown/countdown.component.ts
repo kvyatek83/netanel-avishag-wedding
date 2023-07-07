@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subject, Subscription, interval, takeUntil, tap } from 'rxjs';
+import { Subject, interval, takeUntil } from 'rxjs';
 import { LanguageService } from 'src/app/services/lang.service';
 
 @Component({
