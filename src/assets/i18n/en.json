@@ -1,71 +1,90 @@
 {
-    "appName": "BeOne",
-    "hello": "Hello {{value}}",
-    "login": {
-        "username": "Enter your user name",
-        "password": "Enter your password",
-        "submit": "Login "
-    },
-    "guest": {
-        "calendar": "Add to calendar",
-        "waze": "Navigation"
-    },
-    "filter": {
-        "filterType": "Filter by...",
-        "filterValue": "Enter your filter..."
-    },
-    "dbControl": {
-        "loadTable": "Load guest to list",
-        "downloadRemote": "Download list",
-        "saveToRemote": "Save local changes",
-        "replaceRemote": "Upload new list"
-    },
-    "columns": {
-        "confirmation": "Confirmation",
-        "email": "Email",
-        "hebrewname": "Hebrew Name",
-        "participants": "Participants",
-        "phone": "Phone Number",
-        "transport": "Transport",
-        "username": "User Name",
-        "actions": "Actions"
-    },
-    "actionsBtns": {
-        "edit": "Edit guest details",
-        "save": "Save edited details",
-        "cancel": "Cancel editing",
-        "revert": "Restor original guest details",
-        "delete": "Delete guest from list"
-    },
-    "booleans": {
-        "true": "Yes",
-        "false": "No"
-    },
-    "loadFiles": {
-        "load": "Load your list",
-        "upload": "Upload your list",
-        "dnd": "Drag and drop file here",
-        "or": "Or",
-        "browse": "Browse for file",
-        "submit": "Submit",
-        "cancel": "Cancel"
-    },
-    "guestListSum": {
-        "confirm": "Total confirm: {{confirm}} / {{total}}",
-        "transport": "Total transport: {{value}}",
-        "participants": "Total participants {{value}}"
-    },
-    "guestPage": {
-        "waze": "Open in Waze",
-        "googleCalendar": "Add to Google Calendar",
-        "ceremony": "Hupa ceremony",
-        "reception": "Reception",
-        "location": "Atura events, Mini-Israel"
-    },
-    "timer": {
-        "days": "Days",
-        "hours": "Hours",
-        "minutes": "Minutes",
-        "seconds": "Seconds"
-    }
+  "appName": "BeOne",
+  "hello": "Hello {{value}}",
+  "login": {
+    "username": "Enter your user name",
+    "password": "Enter your password",
+    "submit": "Login "
+  },
+  "guest": {
+    "calendar": "Add to calendar",
+    "waze": "Navigation"
+  },
+  "filter": {
+    "filterType": "Filter by...",
+    "filterValue": "Enter your filter..."
+  },
+  "dbControl": {
+    "loadTable": "Load guest to list",
+    "downloadRemote": "Download list",
+    "saveToRemote": "Save local changes",
+    "newGuest": "Add new guest",
+    "sendMessage": "Send message",
+    "replaceRemote": "Upload new list"
+  },
+  "columns": {
+    "confirmation": "Confirmation",
+    "email": "Email",
+    "hebrewname": "Hebrew Name",
+    "participants": "Participants",
+    "phone": "Phone Number",
+    "transport": "Transport",
+    "username": "User Name",
+    "actions": "Actions"
+  },
+  "actionsBtns": {
+    "edit": "Edit guest details",
+    "save": "Save edited details",
+    "cancel": "Cancel editing",
+    "revert": "Restor original guest details",
+    "delete": "Delete guest from list"
+  },
+  "booleans": {
+    "true": "Yes",
+    "false": "No"
+  },
+  "loadFiles": {
+    "load": "Load your list",
+    "upload": "Upload your list",
+    "dnd": "Drag and drop file here",
+    "or": "Or",
+    "browse": "Browse for file",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "newGuestForm": {
+    "title": "New guest details",
+    "username": "User Name",
+    "hebrewname": "Guest name",
+    "phone": "Guest phone number",
+    "confirmation": "Guest is confirm",
+    "transport": "Guest need transport",
+    "participants": "Total guests",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "messageBox": {
+    "title": "Message sender",
+    "placeholdeer": "Write you message here...",
+    "submit": "Send",
+    "cancel": "Cancel"
+  },
+  "guestListSum": {
+    "confirm": "Total confirm: {{confirm}} / {{total}}",
+    "transport": "Total transport: {{value}}",
+    "participants": "Total participants {{value}}"
+  },
+  "guestPage": {
+    "waze": "Open in Waze",
+    "googleCalendar": "Add to Google Calendar",
+    "ceremony": "Hupa ceremony",
+    "reception": "Reception",
+    "location": "Atura events, Mini-Israel"
+  },
+  "timer": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  }
 }

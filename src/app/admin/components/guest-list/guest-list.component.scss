@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
   margin: 20px 0;
-  gap: 20px;
+  gap: 15px;
 }
 
 .filter-guests {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 15px;
   > mat-form-field {
     flex: 1;
   }
@@ -16,16 +16,17 @@
 
 .db-control {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   gap: 20px;
   > button {
-    flex: 1;
+    flex: 1 0 auto;
+    height: 50px;
   }
 }
 
-// .mat-mdc-select-rtl > .mat-mdc-select-trigger > .mat-mdc-select-value {
-//       text-align: right !important;
-// }
+.guest-list {
+  border: 1px solid #e0e0e0;
+}
 
 .mat-mdc-option-rtl {
   direction: rtl !important;
@@ -38,26 +39,23 @@
   > ::ng-deep .mat-mdc-option-pseudo-checkbox {
     margin-left: 0;
   }
-  
 }
 
 .rtl {
-  > ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix .mdc-floating-label--float-above {
+  > ::ng-deep
+    .mat-mdc-form-field
+    .mat-mdc-text-field-wrapper
+    .mat-mdc-form-field-flex
+    .mat-mdc-form-field-infix
+    .mdc-floating-label--float-above {
     transform: translateY(-20px) !important;
     font-size: 12px;
   }
-  
 }
-
-
-//   .mat-form-field-label, .mat-select-value{text-align: right}
-// .mat-option { direction: rtl; }
-// .mat-option-text {margin-right: 10px;text-align: right; }
-
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
-} 
+}
 
 .cell-changed {
   background-color: #f1bbbb;
@@ -104,10 +102,10 @@
   }
 
   .mat-mdc-header-cell,
-.mat-mdc-footer-cell,
-.mat-mdc-cell {
-  min-width: 256px;
-}
+  .mat-mdc-footer-cell,
+  .mat-mdc-cell {
+    min-width: 256px;
+  }
 }
 
 @media only screen and (max-width: 760px) {
@@ -118,7 +116,11 @@
   }
 
   table {
-    max-height: 395px;
+    max-height: 270px;
+  }
+
+  .db-control > button {
+    min-width: calc((100% - 60px) / 2); // 60px considering 20px gap
   }
 }
 
@@ -129,7 +131,6 @@
     min-width: 170px;
   }
 }
-
 
 .mat-mdc-cell:not(:last-child) {
   border-right: 1px solid #e0e0e0;
@@ -178,4 +179,14 @@
   display: block;
   width: 100%;
   overflow-x: auto;
+}
+
+.cdk-column-select,
+.mat-column-select {
+  min-width: 72px;
+}
+
+.cdk-column-actions,
+mat-column-actions {
+  min-width: 225px;
 }

@@ -3,6 +3,7 @@ const fs = require("fs");
 const csvParser = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const path = require("path");
+const utils = require("./utils");
 
 const csvFile = path.resolve(process.env.DATA_FILE || "users.csv");
 
@@ -67,6 +68,53 @@ module.exports = {
       if (err) console.log("error");
       else console.log("Ok");
     });
+  },
+  async parseUsersToGuestList() {
+    const users = await this.readUsersFromCSV(csvFile);
+    return users.map((user) => {
+      delete user.password;
+      delete user.role;
+      const confirmation = utils.stringBooleanToBoolean(user.confirmation);
+      const transport = utils.stringBooleanToBoolean(user.transport);
+      user.confirmation = confirmation;
+      user.transport = transport;
+      user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
+      return user;
+    });
+  },
+  async updateUsers(usersToUpdate) {
+    if (!usersToUpdate || usersToUpdate.length === 0) {
+      // error
+    }
+
+    const header = Object.keys(usersToUpdate[0]).map((key) => {
+      return { id: key, title: key };
+    });
+
+    const users = await this.readUsersFromCSV(csvFile);
+
+    usersToUpdate.forEach((newUser) => {
+      const userIndex = users.findIndex((user) => user.id === newUser.id);
+
+      // fix phone numbers
+      if (userIndex !== -1 && users[userIndex].role !== "admin" ) {
+        if (!newUser.deleted) {
+            users[userIndex] = newUser;
+        } else {
+            users.splice(userIndex, 1)
+        }
+      } else {
+        users.push(newUser);
+      }
+    });
+
+    const csvWriter = createCsvWriter({
+      path: csvFile,
+      header: header,
+      alwaysQuote: true,
+    });
+
+    await csvWriter.writeRecords(users);
   },
   // async updateUserRole(username, newRole) {
   //     const users = await db.readUsersFromCSV(csvFile);

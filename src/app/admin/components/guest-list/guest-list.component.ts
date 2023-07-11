@@ -19,6 +19,8 @@ import {
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { LanguageService } from 'src/app/services/lang.service';
+import { NewGuestComponent } from '../new-guest/new-guest.component';
+import { SendMessageComponent } from '../send-message/send-message.component';
 
 @Component({
   selector: 'app-guest-list',
@@ -95,10 +97,18 @@ export class GuestListComponent implements OnDestroy {
 
   noLocalChangesMade(): boolean {
     const loacl: WeddingGuest[] = JSON.parse(JSON.stringify(this.dataSource.data));
-    return JSON.stringify(this.originalGuestsState) === JSON.stringify(loacl.map(item => {
-      delete item?.editing;
-      delete item?.deleted;
-      return item;
+    return JSON.stringify(this.originalGuestsState) === JSON.stringify(loacl.map(guest => {
+      delete guest?.editing;
+
+      const index = this.originalGuestsState.findIndex(user => user.id === guest.id)
+      if (index > -1 && guest?.deleted) {
+      return guest;
+        
+      } else {
+      delete guest?.deleted;
+      return guest;
+
+      }
     }));
   }
 
@@ -208,6 +218,21 @@ export class GuestListComponent implements OnDestroy {
     this.selection.select(...this.dataSource.filteredData);
   }
 
+  addNewGuest(): void {
+    const dialogRef = this.dialog.open(NewGuestComponent, {
+      panelClass: 'dialog-responsive',
+      data: {
+        users: this.dataSource.data.map(guest => guest.phone)
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((user: WeddingGuest) => {
+      if (user) {
+        this.reloadGuestListData([...this.dataSource.data, user]);
+      }
+    });
+  }
+
   openUploadFile(): void {
     const dialogRef = this.dialog.open(LoadFileComponent, {
       panelClass: 'dialog-responsive',
@@ -241,17 +266,23 @@ export class GuestListComponent implements OnDestroy {
         console.log(cloneGuestList);
 
         this.reloadGuestListData(cloneGuestList);
-        // this.dataSource = new MatTableDataSource(cloneGuestList);
-        // setTimeout(() => {
-        //   this.dataSource.paginator = this.paginator;
-        //   this.dataSource.sort = this.sort;
-        // }, 0);
       }
     });
   }
 
-  openMessageBot(): void {
-    // Dailog for guest messages
+  sendMessage(): void {
+    const dialogRef = this.dialog.open(SendMessageComponent, {
+      panelClass: 'dialog-responsive',
+      data: {
+        users: this.dataSource.data.map(guest => guest.phone)
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((user: WeddingGuest) => {
+      if (user) {
+        this.reloadGuestListData([...this.dataSource.data, user]);
+      }
+    });
   }
 
   downloadDb(): void {
@@ -286,7 +317,18 @@ export class GuestListComponent implements OnDestroy {
   }
 
   saveListToDB(): void {
-
+    this.isLoading = true;
+    const updatedGuestList = this.dataSource.data.filter(guest => {
+      const userIndex = this.originalGuestsState.findIndex(user => user.id === guest.id);
+      
+      // not fully work
+      return guest?.deleted !== true && userIndex > -1;
+    })
+    
+    this.adminService.saveChangesToDB(this.dataSource.data).pipe(take(1))
+    .subscribe((newGuestList: WeddingGuest[]) => {
+      this.initGuestsTable(newGuestList);
+    });
   }
 
   private initGuestsTable(users: WeddingGuest[]): void {

@@ -6,7 +6,7 @@ type ThemeType = 'fill' | 'outline';
 @Component({
   selector: 'app-guest-field',
   templateUrl: './guest-field.component.html',
-  styleUrls: ['./guest-field.component.scss']
+  styleUrls: ['./guest-field.component.scss'],
 })
 export class GuestFieldComponent implements OnChanges {
   @Input() externalFormControl!: FormControl;
@@ -18,7 +18,11 @@ export class GuestFieldComponent implements OnChanges {
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['externalFormControl']?.currentValue) {
-      this.controlType = (this.externalFormControl?.value === true || this.externalFormControl?.value == false) ? 'boolean' : 'string';
+      this.controlType =
+        this.externalFormControl?.value === true ||
+        this.externalFormControl?.value == false
+          ? 'boolean'
+          : 'string';
     }
   }
 }

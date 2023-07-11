@@ -7,4 +7,8 @@ import { Component, Input } from '@angular/core';
 })
 export class BooleanSpanComponent {
   @Input() spanValue!: string | boolean;
+
+  typeOf(value: any) {
+    return typeof value;
+  }
 }

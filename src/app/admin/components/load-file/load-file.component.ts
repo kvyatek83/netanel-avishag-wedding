@@ -168,7 +168,6 @@ export class LoadFileComponent implements OnDestroy {
   }
 
   private parseCSV(csvData: string): void {
-    // replace hebrew strings to file format
     Papa.parse(csvData, {
       header: true,
       complete: (result) => {

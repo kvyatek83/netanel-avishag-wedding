@@ -17,6 +17,8 @@ export interface WeddingGuest {
   deleted?: boolean;
 }
 
+// Add user errors
+
 @Injectable({
   providedIn: 'root',
 })
@@ -35,5 +37,9 @@ export class AdminService {
 
   replaceDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
     return this.http.post<WeddingGuest[]>('/api/admin/replace-db', {users: guests}).pipe(take(1));
+  }
+
+  saveChangesToDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
+    return this.http.post<WeddingGuest[]>('/api/admin/save-changes-to-db', {users: guests}).pipe(take(1));
   }
 }

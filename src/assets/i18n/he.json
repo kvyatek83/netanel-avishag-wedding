@@ -1,67 +1,86 @@
 {
-    "appName": "והיו לאחד",
-    "hello": "שלום {{value}}",
-    "login": {
-        "username": "הכנס/י את שם המשתמש שלך",
-        "password": "הכנס/י את הסיסמא שלך",
-        "submit": "התחבר/י"
-    },
-    "filter": {
-        "filterType": "הפעלת סינון לפי...",
-        "filterValue": "הכנס/י ערך סינון..."
-    },
-    "dbControl": {
-        "loadTable": "טעינת אורחים",
-        "downloadRemote": "הורדת רשימה",
-        "saveToRemote": "שמירת שינויים",
-        "replaceRemote": "החלפת רשימת אורחים"
-    },
-    "columns": {
-        "confirmation": "מגיע",
-        "email": "אימייל",
-        "hebrewname": "שם בעברית",
-        "participants": "כמות משתתפים",
-        "phone": "מספר טלפון",
-        "transport": "הסעה",
-        "username": "שם משתמש",
-        "actions": "פעולות"
-    },
-    "actionsBtns": {
-        "edit": "עריכת פרטי אורח",
-        "save": "שמירת פרטי אורח",
-        "cancel": "ביטול מצב עריכה",
-        "revert": "ביטול שינויים עבור אורח",
-        "delete": "הסרת אורח מהרשימה"
-    },
-    "booleans": {
-        "true": "כן",
-        "false": "לא"
-    },
-    "loadFiles": {
-        "load": "טעינת רשימת אורחים",
-        "upload": "העלאת רשימת אורחים",
-        "dnd": "יש למשוך את הקובץ לפה",
-        "or": "או",
-        "browse": "חיפוש במחשב שלך",
-        "submit": "אישור",
-        "cancel": "ביטול"
-    },
-    "guestListSum": {
-        "confirm": "כמות מאשרים: {{confirm}} / {{total}}",
-        "transport": "מעוניינים בהסעה: {{value}}",
-        "participants": "כמות משתתפים {{value}}"
-    },
-    "guestPage": {
-        "waze": "ניווט לאולם",
-        "googleCalendar": "הוספה ליומן",
-        "ceremony": "חופה וקידושין",
-        "reception": "קבלת פנים",
-        "location": "גן אירועים 'אטורה' מיני ישראל"
-    },
-    "timer": {
-        "days": "ימים",
-        "hours": "שעות",
-        "minutes": "דקות",
-        "seconds": "שניות"
-    }
+  "appName": "והיו לאחד",
+  "hello": "שלום {{value}}",
+  "login": {
+    "username": "הכנס/י את שם המשתמש שלך",
+    "password": "הכנס/י את הסיסמא שלך",
+    "submit": "התחבר/י"
+  },
+  "filter": {
+    "filterType": "הפעלת סינון לפי...",
+    "filterValue": "הכנס/י ערך סינון..."
+  },
+  "dbControl": {
+    "loadTable": "טעינת אורחים",
+    "downloadRemote": "הורדת רשימה",
+    "saveToRemote": "שמירת שינויים",
+    "newGuest": "הוספת אורח/ת",
+    "sendMessage": "שליחת הודעה",
+    "replaceRemote": "החלפת רשימה"
+  },
+  "columns": {
+    "confirmation": "מגיע",
+    "email": "אימייל",
+    "hebrewname": "שם בעברית",
+    "participants": "כמות משתתפים",
+    "phone": "מספר טלפון",
+    "transport": "הסעה",
+    "username": "שם משתמש",
+    "actions": "פעולות"
+  },
+  "actionsBtns": {
+    "edit": "עריכת פרטי אורח",
+    "save": "שמירת פרטי אורח",
+    "cancel": "ביטול מצב עריכה",
+    "revert": "ביטול שינויים עבור אורח",
+    "delete": "הסרת אורח מהרשימה"
+  },
+  "booleans": {
+    "true": "כן",
+    "false": "לא"
+  },
+  "loadFiles": {
+    "load": "טעינת רשימת אורחים",
+    "upload": "העלאת רשימת אורחים",
+    "dnd": "יש למשוך את הקובץ לפה",
+    "or": "או",
+    "browse": "חיפוש במחשב שלך",
+    "submit": "אישור",
+    "cancel": "ביטול"
+  },
+  "newGuestForm": {
+    "title": "הוספת אורח/ת",
+    "username": "שם משתמש/ת",
+    "hebrewname": "שם אורח/ת",
+    "phone": "מספר טלפון",
+    "confirmation": "מאושר הגעה",
+    "transport": "צורך בהסעה",
+    "participants": "סך הכל יגיעו",
+    "submit": "אישור",
+    "cancel": "ביטול"
+  },
+  "messageBox": {
+    "title": "שליחת הודעה",
+    "placeholdeer": "הכנסת הודעה חדשה פה...",
+    "submit": "שליחה",
+    "cancel": "ביטול"
+  },
+  "guestListSum": {
+    "confirm": "כמות מאשרים: {{confirm}} / {{total}}",
+    "transport": "מעוניינים בהסעה: {{value}}",
+    "participants": "כמות משתתפים {{value}}"
+  },
+  "guestPage": {
+    "waze": "ניווט לאולם",
+    "googleCalendar": "הוספה ליומן",
+    "ceremony": "חופה וקידושין",
+    "reception": "קבלת פנים",
+    "location": "גן אירועים 'אטורה' מיני ישראל"
+  },
+  "timer": {
+    "days": "ימים",
+    "hours": "שעות",
+    "minutes": "דקות",
+    "seconds": "שניות"
+  }
 }

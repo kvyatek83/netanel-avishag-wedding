@@ -10,6 +10,8 @@ import { LoadFileComponent } from './components/load-file/load-file.component';
 import { BooleanSpanComponent } from './components/boolean-span/boolean-span.component';
 import { GuestFieldComponent } from './components/guest-field/guest-field.component';
 import { MaterialModule } from '../material.module';
+import { NewGuestComponent } from './components/new-guest/new-guest.component';
+import { SendMessageComponent } from './components/send-message/send-message.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { MaterialModule } from '../material.module';
     LoadFileComponent,
     DndDirective,
     BooleanSpanComponent,
-    GuestFieldComponent
+    GuestFieldComponent,
+    NewGuestComponent,
+    SendMessageComponent
   ],
   imports: [
     CommonModule,

@@ -11,17 +11,8 @@ router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {
 });
 
 router.get("/admin/get-all-guests", verifyToken, checkRole("admin"), async (req, res) => {
-  const users = await db.readUsersFromCSV(db.getDbPath());
-  res.status(200).send(users.map(user => {
-    delete user.password;
-    delete user.role;
-    const confirmation = utils.stringBooleanToBoolean(user.confirmation);
-    const transport = utils.stringBooleanToBoolean(user.transport);
-    user.confirmation = confirmation;
-    user.transport = transport;
-    user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
-    return user;
-  }));
+  const users = await db.parseUsersToGuestList();
+  res.status(200).send(users);
 });
 
 router.get("/admin/download", verifyToken, checkRole("admin"), async (req, res) => {
@@ -76,18 +67,16 @@ router.get('/admin/download-db', verifyToken, checkRole("admin"), async(req, res
 router.post('/admin/replace-db', verifyToken, checkRole("admin"), async(req, res) => {
   db.overrideUsersInCSV(req.body.users);
 
-  // utils
-  const users = await db.readUsersFromCSV(db.getDbPath());
-  res.status(200).send(users.map(user => {
-    delete user.password;
-    delete user.role;
-    const confirmation = utils.stringBooleanToBoolean(user.confirmation);
-    const transport = utils.stringBooleanToBoolean(user.transport);
-    user.confirmation = confirmation;
-    user.transport = transport;
-    user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
-    return user;
-  }));
+  const users = await db.parseUsersToGuestList();
+  res.status(200).send(users);
 });
+
+router.post('/admin/save-changes-to-db', verifyToken, checkRole("admin"), async(req, res) => {
+  await db.updateUsers(req.body.users);
+
+  const users = await db.parseUsersToGuestList();
+  res.status(200).send(users);
+});
+
 
 module.exports = router;
