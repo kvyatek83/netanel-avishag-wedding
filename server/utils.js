@@ -31,7 +31,7 @@ module.exports = {
     },
 
     stringBooleanToBoolean(str) {
-        return str?.toLowerCase?.() === 'true';
+        return str?.toLowerCase() === 'true';
     },
 
     booleanToHebrewBoolean(str) {
@@ -39,7 +39,7 @@ module.exports = {
     },
 
     checkIfBoolean(str) {
-        return str?.toLowerCase?.() === 'true' || str?.toLowerCase?.() === 'false';
+        return str?.toLowerCase() === 'true' || str?.toLowerCase() === 'false';
     },
 
     checkIfPhoneNumber(str) {
