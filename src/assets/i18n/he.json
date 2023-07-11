@@ -60,8 +60,11 @@
     "cancel": "ביטול"
   },
   "messageBox": {
-    "title": "שליחת הודעה",
-    "placeholdeer": "הכנסת הודעה חדשה פה...",
+    "guestTitle": "שליחת הודעה אל אורח/ת",
+    "guestsTitle": "שליחת הודעה אל {{selectedUsers}} אורחים",
+    "invitation": "שליחת הזמנה מצורפת",
+    "link": "הוספת לינק לאתר",
+    "messagePlaceholdeer": "הכנסת הודעה חדשה פה...",
     "submit": "שליחה",
     "cancel": "ביטול"
   },

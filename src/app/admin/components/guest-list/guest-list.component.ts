@@ -96,20 +96,27 @@ export class GuestListComponent implements OnDestroy {
   }
 
   noLocalChangesMade(): boolean {
-    const loacl: WeddingGuest[] = JSON.parse(JSON.stringify(this.dataSource.data));
-    return JSON.stringify(this.originalGuestsState) === JSON.stringify(loacl.map(guest => {
-      delete guest?.editing;
+    const loacl: WeddingGuest[] = JSON.parse(
+      JSON.stringify(this.dataSource.data)
+    );
+    return (
+      JSON.stringify(this.originalGuestsState) ===
+      JSON.stringify(
+        loacl.map((guest) => {
+          delete guest?.editing;
 
-      const index = this.originalGuestsState.findIndex(user => user.id === guest.id)
-      if (index > -1 && guest?.deleted) {
-      return guest;
-        
-      } else {
-      delete guest?.deleted;
-      return guest;
-
-      }
-    }));
+          const index = this.originalGuestsState.findIndex(
+            (user) => user.id === guest.id
+          );
+          if (index > -1 && guest?.deleted) {
+            return guest;
+          } else {
+            delete guest?.deleted;
+            return guest;
+          }
+        })
+      )
+    );
   }
 
   initFilter(): void {
@@ -175,7 +182,7 @@ export class GuestListComponent implements OnDestroy {
     );
 
     if (guest.deleted) {
-      guest.deleted = false
+      guest.deleted = false;
     }
 
     if (originalGuestDetails) {
@@ -222,15 +229,16 @@ export class GuestListComponent implements OnDestroy {
     const dialogRef = this.dialog.open(NewGuestComponent, {
       panelClass: 'dialog-responsive',
       data: {
-        users: this.dataSource.data.map(guest => guest.phone)
+        users: this.dataSource.data.map((guest) => guest.phone),
       },
     });
 
-    dialogRef.afterClosed().subscribe((user: WeddingGuest) => {
-      if (user) {
+    dialogRef
+      .afterClosed()
+      .pipe(filter((user) => !!user))
+      .subscribe((user: WeddingGuest) => {
         this.reloadGuestListData([...this.dataSource.data, user]);
-      }
-    });
+      });
   }
 
   openUploadFile(): void {
@@ -241,8 +249,10 @@ export class GuestListComponent implements OnDestroy {
       },
     });
 
-    dialogRef.afterClosed().subscribe((users: WeddingGuest[]) => {
-      if (users) {
+    dialogRef
+      .afterClosed()
+      .pipe(filter((user) => !!user))
+      .subscribe((users: WeddingGuest[]) => {
         let cloneGuestList: WeddingGuest[] = JSON.parse(
           JSON.stringify(this.dataSource.data)
         );
@@ -263,26 +273,35 @@ export class GuestListComponent implements OnDestroy {
           }
         });
 
-        console.log(cloneGuestList);
-
         this.reloadGuestListData(cloneGuestList);
-      }
-    });
+      });
   }
 
   sendMessage(): void {
     const dialogRef = this.dialog.open(SendMessageComponent, {
       panelClass: 'dialog-responsive',
       data: {
-        users: this.dataSource.data.map(guest => guest.phone)
+        selectedUsers: this.selection.selected.length,
       },
     });
 
-    dialogRef.afterClosed().subscribe((user: WeddingGuest) => {
-      if (user) {
-        this.reloadGuestListData([...this.dataSource.data, user]);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((params) => !!params),
+        switchMap((params: { message: string; invitation: boolean }) => {
+          // this.isLoading = true;
+          return this.adminService.sendMessage(
+            params.message,
+            params.invitation,
+            this.selection.selected
+          );
+        })
+      )
+      .subscribe((a) => {
+        this.selection.clear();
+        console.log(a);
+      });
   }
 
   downloadDb(): void {
@@ -306,7 +325,7 @@ export class GuestListComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         filter((users: WeddingGuest[]) => !!users),
-        switchMap((users: WeddingGuest[]) => { 
+        switchMap((users: WeddingGuest[]) => {
           this.isLoading = true;
           return this.adminService.replaceDB(users);
         })
@@ -318,17 +337,21 @@ export class GuestListComponent implements OnDestroy {
 
   saveListToDB(): void {
     this.isLoading = true;
-    const updatedGuestList = this.dataSource.data.filter(guest => {
-      const userIndex = this.originalGuestsState.findIndex(user => user.id === guest.id);
-      
-      // not fully work
-      return guest?.deleted !== true && userIndex > -1;
-    })
-    
-    this.adminService.saveChangesToDB(this.dataSource.data).pipe(take(1))
-    .subscribe((newGuestList: WeddingGuest[]) => {
-      this.initGuestsTable(newGuestList);
-    });
+    // const updatedGuestList = this.dataSource.data.filter((guest) => {
+    //   const userIndex = this.originalGuestsState.findIndex(
+    //     (user) => user.id === guest.id
+    //   );
+
+    //   // not fully work
+    //   return guest?.deleted !== true && userIndex > -1;
+    // });
+
+    this.adminService
+      .saveChangesToDB(this.dataSource.data)
+      .pipe(take(1))
+      .subscribe((newGuestList: WeddingGuest[]) => {
+        this.initGuestsTable(newGuestList);
+      });
   }
 
   private initGuestsTable(users: WeddingGuest[]): void {
@@ -337,7 +360,8 @@ export class GuestListComponent implements OnDestroy {
       this.displayedColumns = [
         ...Object.keys(users[0])
           .filter((col) => col !== 'id')
-          .sort((curr, next) => curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0
+          .sort((curr, next) =>
+            curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0
           ),
       ];
 

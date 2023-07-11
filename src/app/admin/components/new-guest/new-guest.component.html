@@ -58,8 +58,9 @@
     </form>
   </mat-dialog-content>
   <mat-dialog-actions [align]="'end'">
-    <button mat-button mat-dialog-close>{{ t("cancel") }}</button>
+    <button class="action-button" mat-button mat-dialog-close>{{ t("cancel") }}</button>
     <button
+    class="action-button"
       mat-button
       [mat-dialog-close]="guestForm.value"
       cdkFocusInitial

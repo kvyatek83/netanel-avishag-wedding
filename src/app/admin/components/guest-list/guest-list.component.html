@@ -46,7 +46,7 @@
         <button mat-raised-button color="primary" (click)="addNewGuest()">
           {{ t("dbControl.newGuest") }}
         </button>
-        <button mat-raised-button color="primary" (click)="sendMessage()">
+        <button mat-raised-button color="primary" [disabled]="this.selection.selected.length === 0" (click)="sendMessage()">
           {{ t("dbControl.sendMessage") }}
         </button>
         <button mat-raised-button color="primary" [disabled]="noLocalChangesMade()" (click)="saveListToDB()">

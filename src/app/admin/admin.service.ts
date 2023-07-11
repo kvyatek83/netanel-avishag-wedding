@@ -42,4 +42,8 @@ export class AdminService {
   saveChangesToDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
     return this.http.post<WeddingGuest[]>('/api/admin/save-changes-to-db', {users: guests}).pipe(take(1));
   }
+
+  sendMessage(message: string, invitation: boolean, users: WeddingGuest[]): Observable<{message: string}> {
+    return this.http.post<{message: string}>('/api/admin/send-message', {message, invitation, users}).pipe(take(1));
+  }
 }

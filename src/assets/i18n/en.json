@@ -64,8 +64,11 @@
     "cancel": "Cancel"
   },
   "messageBox": {
-    "title": "Message sender",
-    "placeholdeer": "Write you message here...",
+    "guestTitle": "Send message for guest",
+    "guestsTitle": "Send message for {{selectedUsers}} guests",
+    "invitation": "Send invitation photo",
+    "link": "Insert invitation link",
+    "messagePlaceholdeer": "Write you message here...",
     "submit": "Send",
     "cancel": "Cancel"
   },

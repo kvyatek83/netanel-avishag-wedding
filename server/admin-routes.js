@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const { verifyToken, checkRole } = require("./auth-service");
@@ -76,6 +77,31 @@ router.post('/admin/save-changes-to-db', verifyToken, checkRole("admin"), async(
 
   const users = await db.parseUsersToGuestList();
   res.status(200).send(users);
+});
+
+router.post('/admin/send-message', verifyToken, checkRole("admin"), async(req, res) => {
+  // await db.updateUsers(req.body.users);
+  console.log(req.body);
+  // const users = await db.parseUsersToGuestList();
+  
+  if (!req.body.message) {
+    return res.status(400).send({ message: "Message is empty." });
+  }
+
+  if (req.body.users.lenght === 0) {
+    return res.status(400).send({ message: "No guests to send." });
+  }
+
+  if (req.body.invitation) {
+    // change 
+    res.status(400).send({ message: "Message is empty." });
+  }
+
+
+  const message = utils.buildGuestLink(req.body.message, process.env.GUEST_LINK);
+
+  // call twilio 
+  res.status(200).send({ message: message });
 });
 
 
