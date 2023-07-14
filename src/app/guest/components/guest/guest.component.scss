@@ -1,85 +1,187 @@
-.mat-mdc-fab.mat-primary,
-.mat-mdc-mini-fab.mat-primary {
-  --mdc-fab-container-color: black;
-}
-
 .guest-page {
   width: 100%;
   height: 100%;
   background-color: #f3f1f0;
+  font-family: "avishag", sans-serif;
 
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    width: fit-content;
-    padding: 20px;
-    box-sizing: border-box;
-    margin: auto;
-    gap: 15px;
-
-    &__wedding-date {
-      font-size: 66px;
-      font-family: "Palatino", serif;
-    }
-
-    &__wedding-timelines {
-      font-size: 20px;
-      width: 100%;
-
+  @media only screen and (max-width: 760px) {
+    &__content {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      width: 80vw;
+      padding: 45px 20px 0px 20px;
+      box-sizing: border-box;
+      margin: auto;
+      gap: 15px;
 
-      &__timeline {
-        display: flex;
-        flex-direction: column;
-        width: 93%;
-        /* margin: auto; */
-        width: fit-content;
+      &__wedding-date {
+        font-size: 66px;
+        font-family: "Palatino", serif;
       }
 
-      .label {
-        align-items: center;
-        // rtl
-        margin-right: auto;
-      }
-    }
+      &__wedding-timelines {
+        font-size: 20px;
+        gap: 50px;
 
-    &__wedding-location {
-      font-size: 20px;
-    }
-
-    &__wedding-user-actions {
-    }
-
-    &__wedding-buttons {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      width: 90%;
-
-      &__guest-feature {
         display: flex;
-        /* flex-direction: column; */
-        /* width: 100px; */
-        align-items: center;
-        border: 1px solid black;
-        border-radius: 25px;
-        padding: 5px;
-        height: 40px;
-        width: 40px;
+        flex-direction: row;
 
-        .icon {
-          height: 30px;
-          margin: auto;
-          width: 30px;
+        &__timeline {
+          display: flex;
+          flex-direction: column;
+          width: 93%;
+          width: fit-content;
         }
 
-        a {
-          color: black;
-          text-decoration: none;
+        .label {
+          align-items: center;
+          margin-right: auto;
+        }
+      }
+
+      &__wedding-location {
+        font-size: 20px;
+      }
+
+      &__wedding-user-actions {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+
+        &__participants {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+
+      &__wedding-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 50px;
+
+        &__guest-feature {
+          display: flex;
+          align-items: center;
+          border: 1px solid black;
+          border-radius: 25px;
+          padding: 5px;
+          height: 40px;
+          width: 40px;
+
+          .icon {
+            height: 30px;
+            margin: auto;
+            width: 30px;
+          }
+
+          a {
+            color: black;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+
+  @media only screen and (min-width: 760px) {
+    &__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      width: -moz-fit-content;
+      width: fit-content;
+      padding: 60px 20px 0 20px;
+      box-sizing: border-box;
+      margin: auto;
+      gap: 20px;
+      width: 90%;
+
+      &__wedding-date {
+        font-size: 105px;
+        font-family: "Palatino", serif;
+      }
+
+      &__wedding-timelines {
+        font-size: 26px;
+        gap: 40px;
+
+        display: flex;
+        flex-direction: row;
+
+        &__timeline {
+          display: flex;
+          flex-direction: column;
+          width: 93%;
+          width: fit-content;
+        }
+
+        .label {
+          align-items: center;
+          margin-right: auto;
+        }
+      }
+
+      &__wedding-location {
+        font-size: 26px;
+      }
+
+      &__wedding-user-actions {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        gap: 15px;
+
+        &__transport {
+          margin: auto;
+        }
+
+        &__participants {
+          display: flex;
+          flex-direction: row;
+          gap: 20px;
+
+          mat-form-field {
+            width: 130px;
+          }
+
+          button {
+            height: 56px;
+            font-size: 17px;
+          }
+        }
+      }
+
+      &__wedding-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 50px;
+
+        &__guest-feature {
+          display: flex;
+          align-items: center;
+          border: 1px solid black;
+          border-radius: 25px;
+          padding: 5px;
+          height: 40px;
+          width: 40px;
+
+          .icon {
+            height: 30px;
+            margin: auto;
+            width: 30px;
+          }
+
+          a {
+            color: black;
+            text-decoration: none;
+          }
         }
       }
     }
@@ -161,7 +263,7 @@
     &__content {
       &__message {
         max-width: 260px;
-        
+
         &__title {
           font-weight: bold;
           font-size: 4vw;
@@ -180,4 +282,84 @@
       }
     }
   }
+}
+
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary,
+.mat-mdc-raised-button {
+  --mdc-fab-container-color: black;
+  --mdc-protected-button-container-color: black;
+}
+
+.mdc-text-field--filled .mdc-line-ripple::after {
+  border-bottom-color: black;
+}
+
+.mat-mdc-option-rtl {
+  direction: rtl !important;
+
+  > ::ng-deep .mdc-list-item__primary-text {
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  > ::ng-deep .mat-mdc-option-pseudo-checkbox {
+    margin-left: 0;
+  }
+}
+
+.rtl {
+  ::ng-deep
+    .mat-mdc-form-field-type-mat-select.mat-form-field-appearance-fill
+    .mdc-floating-label--float-above {
+    transform: translateY(-20px) !important;
+    font-size: 12px;
+  }
+
+  ::ng-deep .mat-mdc-checkbox {
+    @media only screen and (max-width: 760px) {
+      label {
+        font-size: 15px;
+        font-family: "avishag", sans-serif;
+      }
+    }
+
+    @media only screen and (min-width: 760px) {
+      label {
+        font-size: 20px;
+        font-family: "avishag", sans-serif;
+      }
+    }
+  }
+}
+
+::ng-deep .mdc-menu-surface.mat-mdc-select-panel {
+  max-height: 160px !important;
+}
+
+::ng-deep
+  .mdc-text-field--focused:not(.mdc-text-field--disabled)
+  .mdc-floating-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+::ng-deep
+  .mat-primary
+  .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
+  color: black;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused.mat-primary .mat-mdc-select-arrow {
+  color: black;
+}
+
+::ng-deep .mdc-text-field--filled .mdc-line-ripple::after {
+  border-bottom-color: black;
+}
+
+::ng-deep
+  .mat-primary
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
+  .mdc-list-item__primary-text {
+  color: black;
 }

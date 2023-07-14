@@ -1,20 +1,26 @@
 .timer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  .column {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    flex-direction: column;
+    align-items: center;
 
-    .column {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        .date-value {
-            font-size: 32px;
-            font-family: "Lucida Console", monospace;
-        }
-
-        .date-label {
-            font-size: 14px;
-        }
+    .date-value {
+      font-size: 32px;
+      font-family: "Lucida Console", monospace;
     }
+
+    .date-label {
+      font-size: 14px;
+    }
+  }
+}
+
+@media only screen and (min-width: 760px) {
+  .timer {
+    gap: 65px;
+  }
 }

@@ -24,7 +24,7 @@ export class NewGuestComponent implements OnDestroy {
     email: [null],
     confirmation: [false],
     transport: [false],
-    participants: [1],
+    participants: [0, [Validators.required, Validators.min(0)]],
   })
 
   private destroy$: Subject<void> = new Subject();

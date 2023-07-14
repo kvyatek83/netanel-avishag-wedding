@@ -5,12 +5,10 @@ import { LanguageService } from 'src/app/services/lang.service';
 @Component({
   selector: 'app-countdown',
   templateUrl: './countdown.component.html',
-  styleUrls: ['./countdown.component.scss']
+  styleUrls: ['./countdown.component.scss'],
 })
 export class CountdownComponent implements OnDestroy {
-
-  
-  weAreMarried = false
+  weAreMarried = false;
 
   public dateNow = new Date();
   public dDay = new Date('Oct 10 2023 18:00:00');
@@ -25,16 +23,20 @@ export class CountdownComponent implements OnDestroy {
   public hoursToDday: number | undefined;
   public daysToDday: number | undefined;
 
-  isRtl =false;
+  isRtl = false;
 
   private destroy$: Subject<void> = new Subject();
 
   constructor(private languageService: LanguageService) {}
-  
+
   ngOnInit() {
-    this.languageService.rtl$.pipe(takeUntil(this.destroy$)).subscribe(rtl => this.isRtl = rtl);
+    this.languageService.rtl$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rtl) => (this.isRtl = rtl));
     this.getTimeDifference();
-    interval(1000).pipe(takeUntil(this.destroy$)).subscribe(() => this.getTimeDifference())
+    interval(1000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.getTimeDifference());
   }
 
   ngOnDestroy(): void {
@@ -48,26 +50,30 @@ export class CountdownComponent implements OnDestroy {
   }
 
   private allocateTimeUnits(timeDifference: number): void {
-    this.secondsToDday = Math.floor(
+    this.secondsToDday = this.setValue(Math.floor(
       (timeDifference / this.milliSecondsInASecond) % this.SecondsInAMinute
-    );
-    this.minutesToDday = Math.floor(
+    ));
+    this.minutesToDday = this.setValue(Math.floor(
       (timeDifference / (this.milliSecondsInASecond * this.minutesInAnHour)) %
         this.SecondsInAMinute
-    );
-    this.hoursToDday = Math.floor(
+    ));
+    this.hoursToDday = this.setValue(Math.floor(
       (timeDifference /
         (this.milliSecondsInASecond *
           this.minutesInAnHour *
           this.SecondsInAMinute)) %
         this.hoursInADay
-    );
-    this.daysToDday = Math.floor(
+    ));
+    this.daysToDday = this.setValue(Math.floor(
       timeDifference /
         (this.milliSecondsInASecond *
           this.minutesInAnHour *
           this.SecondsInAMinute *
           this.hoursInADay)
-    );
+    ));
+  }
+
+  private setValue(time: number): number {
+    return time > 0 ? time : 0;
   }
 }

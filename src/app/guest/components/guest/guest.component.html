@@ -34,10 +34,39 @@
         <span class="guest-page__content__wedding-location">{{
           t("location")
         }}</span>
-        <div class="guest-page__content__wedding-user-actions">
-          וואי אני רוצה לבוא אני ועוד ״״
-          <!-- לא רק אני,<mat-slide-toggle>לא יאמן אמרתי 'כן'</mat-slide-toggle> -->
-        </div>
+        <form
+          [formGroup]="form"
+          class="guest-page__content__wedding-user-actions"
+          (ngSubmit)="guestConfirmationStatus()"
+        >
+          <mat-checkbox
+            class="guest-page__content__wedding-user-actions__transport"
+            formControlName="transport"
+            >{{ t("transport") }}</mat-checkbox
+          >
+          <div class="guest-page__content__wedding-user-actions__participants">
+            <mat-form-field [hideRequiredMarker]="true">
+              <mat-label>{{ t("participants") }}</mat-label>
+              <mat-select formControlName="participants">
+                <mat-option
+                  [class.mat-mdc-option-rtl]="isRtl"
+                  *ngFor="let participants of numbers"
+                  [value]="participants"
+                >
+                  {{ participants }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="!form.valid"
+            >
+              {{ t("submit") }}
+            </button>
+          </div>
+        </form>
         <div class="guest-page__content__wedding-buttons">
           <a
             [href]="wazeLink"
@@ -45,11 +74,14 @@
             [matTooltip]="t('waze')"
           >
             <img src="./assets/waze-icon.svg" class="icon" />
-            <!-- <span>{{ t('waze') }}</span> -->
           </a>
-          <button mat-fab color="primary">
-            <mat-icon>power_settings_new_outline</mat-icon>
-            <!-- <img src="./assets/ring.png" > -->
+          <button
+            mat-fab
+            color="primary"
+            [matTooltip]="t('whatsUp')"
+            (click)="whatsUp()"
+          >
+            <img src="./assets/ring.png" width="35px" height="35px" />
           </button>
           <a
             [href]="calendarLink"
@@ -59,32 +91,8 @@
             [matTooltip]="t('googleCalendar')"
           >
             <img src="./assets/calendar-icon.svg" class="icon" />
-            <!-- <span>{{ t('googleCalendar') }}</span> -->
           </a>
         </div>
-        <!-- <a [href]="calendarLink" target="_blank" rel="noopener noreferrer" class="guest-feature">
-              <img src="./assets/calendar-icon.svg" class="waze-icon" />
-              <span>{{ t('googleCalendar') }}</span>
-            </a>
-            <a [href]="wazeLink" class="guest-feature">
-              <img src="./assets/waze-icon.svg" class="waze-icon" />
-              <span>{{ t('waze') }}</span>
-            </a> -->
-        <!-- <div class="guest-feature">
-                <mat-form-field>
-                    <input
-                      type="number"
-                      class="form-control"
-                      matInput
-                      placeholder="Slab"
-                      [formControl]="filterValue">
-                  </mat-form-field>
-                <button mat-raised-button color="primary">
-      
-                    <span *ngIf="filterValue && filterValue.value &&  filterValue.value > 1">קל, אנחנו שם</span>
-                    <span *ngIf="filterValue && filterValue.value &&  filterValue.value === 1">קל, אני שם</span>
-                </button>
-            </div> -->
       </div>
     </div>
   </ng-container>

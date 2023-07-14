@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, catchError, combineLatest, of, take, takeUntil } from 'rxjs';
 import { AuthService, GuestDetails } from 'src/app/services/auth.service';
 import { LanguageService } from 'src/app/services/lang.service';
@@ -19,6 +19,16 @@ interface WeddingDetails {
   weddingLocation: string;
 }
 
+export function NumberValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  
+  if (isNaN(value) || value <= 0) {
+    return { invalidNumber: 'Number needs to be bigger than 1.' };
+  }
+
+  return null;
+}
+
 @Component({
   selector: 'app-guest',
   templateUrl: './guest.component.html',
@@ -31,7 +41,12 @@ export class GuestComponent implements OnInit, OnDestroy {
   calendarLink: string | undefined;
   wazeLink: string | undefined;
 
-  // filterValue = new FormControl(1);
+  form = this.fb.group({
+    participants: [0, [Validators.required, NumberValidator]],
+    transport: [false],
+  });
+
+  readonly numbers = Array.from({ length: 10 }, (_, i) => i + 1);
 
   private userUuid: string | null | undefined;
   private destroy$: Subject<void> = new Subject();
@@ -40,22 +55,39 @@ export class GuestComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private fb: FormBuilder,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.languageService.rtl$
       .pipe(takeUntil(this.destroy$))
       .subscribe((rtl) => (this.isRtl = rtl));
+
     this.userUuid = this.route.snapshot.paramMap.get('id');
     this.isLoading = true;
-
-    setTimeout(() => this.initGuestAndWeddingDetails(), 3000);
+    if (!this.authService.guestDetails) {
+      setTimeout(() => this.initGuestAndWeddingDetails(), 3000);
+    } else {
+      this.initGuestAndWeddingDetails();
+    }
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  guestConfirmationStatus(): void {
+    console.log(this.form.value);
+    // sent to server
+    // amount
+    // confirmation
+  }
+
+  whatsUp(): void {
+    this.router.navigate(['/guest/for-your-information']);
   }
 
   private initGuestAndWeddingDetails(): void {
@@ -85,7 +117,9 @@ export class GuestComponent implements OnInit, OnDestroy {
           if (guestDetails && wedding) {
             this.guest = guestDetails;
             this.authService.setGuestDetails(guestDetails);
-
+            if (Number(guestDetails?.participants) > 3) {
+              this.form.setValue({participants: Number(guestDetails?.participants), transport: guestDetails.transport})
+            }
             this.creatWeddingDetails(wedding);
             this.isLoading = false;
           }
@@ -93,7 +127,7 @@ export class GuestComponent implements OnInit, OnDestroy {
     }
   }
 
-  creatWeddingDetails(wedding: WeddingDetails): void {
+  private creatWeddingDetails(wedding: WeddingDetails): void {
     const eventDate = new Date(
       wedding.weddingYear,
       wedding.weddingMonth,
@@ -115,10 +149,5 @@ export class GuestComponent implements OnInit, OnDestroy {
     )}&location=${encodeURIComponent(wedding.weddingLocation || '')}`;
 
     this.wazeLink = wedding.wazeLink;
-  }
-
-  guestConfirmationStatus(): void {
-    // amount
-    // confirmation
   }
 }

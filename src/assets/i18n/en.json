@@ -80,9 +80,13 @@
   "guestPage": {
     "waze": "Open in Waze",
     "googleCalendar": "Add to Google Calendar",
+    "whatsUp": "A surprise",
     "ceremony": "Hupa ceremony",
     "reception": "Reception",
-    "location": "Atura events, Mini-Israel"
+    "location": "Atura events, Mini-Israel",
+    "transport": "You care aout transportion",
+    "participants": "Total guests",
+    "submit": "See you there"
   },
   "timer": {
     "days": "Days",

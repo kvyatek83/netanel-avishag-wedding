@@ -1,4 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: "avishag";
+  src: url("/assets/fonts/IBMPlexSansHebrew-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 html,
 body {
@@ -20,13 +26,10 @@ body {
     direction: rtl !important;
   }
 
-//   .mat-form-field-label, .mat-select-value{text-align: right}
-// .mat-option { direction: rtl; }
-// .mat-option-text {margin-right: 10px;text-align: right; }
-.mdc-list-item__primary-text {
+  .mdc-list-item__primary-text {
     margin-right: 0;
     margin-left: auto;
-}
+  }
 }
 
 .dialog-responsive {
@@ -38,3 +41,4 @@ body {
     width: 300px;
   }
 }
+.mat-mdc-checkbox-ripple, .mdc-checkbox__ripple { display: none !important; }

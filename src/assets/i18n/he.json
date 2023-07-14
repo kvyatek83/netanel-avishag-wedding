@@ -76,9 +76,13 @@
   "guestPage": {
     "waze": "ניווט לאולם",
     "googleCalendar": "הוספה ליומן",
+    "whatsUp": "משהו מעניין",
     "ceremony": "חופה וקידושין",
     "reception": "קבלת פנים",
-    "location": "גן אירועים 'אטורה' מיני ישראל"
+    "location": "גן אירועים 'אטורה' מיני ישראל",
+    "transport": "הסעה מהצפון מעניינת אותך",
+    "participants": "כמה תהיו",
+    "submit": "נתראה בחופה"
   },
   "timer": {
     "days": "ימים",
