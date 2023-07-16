@@ -1,4 +1,4 @@
-<div class="toast active" [@showHideNotification]="showNotification">
+<div class="toast active"  [@showHideNotification]="showNotification">
   <div class="toast-content">
     <div class="check" [style.background-color]="color">
       <mat-icon>{{ icon }}</mat-icon>
@@ -15,7 +15,7 @@
       fontIcon="close_outline"
     ></mat-icon>
   </div>
-  <ng-container *ngIf="showNotification === 'show'">
+  <ng-container *ngIf="show">
     <div class="progress">
       <div class="inner-progress" [style.background-color]="color"></div>
     </div>

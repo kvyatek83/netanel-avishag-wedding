@@ -38,7 +38,7 @@ interface NotificationConfigurations {
       state(
         'hide',
         style({
-          transform: 'translateX(calc(100% + 30px))',
+          transform: 'translateX(calc(100vw + 30px))',
         })
       ),
       state(
@@ -91,6 +91,7 @@ export class NotificationComponent implements OnDestroy {
     ],
   ]);
 
+  show= false;
   showNotification: 'hide' | 'show' = 'hide';
   isRtl = false;
 
@@ -122,11 +123,14 @@ export class NotificationComponent implements OnDestroy {
           );
           this.icon = currentNotification?.icon;
           this.color = currentNotification?.color;
-          this.showNotification = 'show';
+          this.show = true;
+          setTimeout(() => this.showNotification = 'show', 100);
           this.notificationShowId = setTimeout(() => {
             this.showNotification = 'hide';
             this.notificationsService.setNotification(null);
-          }, 5000);
+
+            setTimeout(() => this.show = false, 1000);
+          }, 50000);
         }
       });
   }
@@ -138,6 +142,7 @@ export class NotificationComponent implements OnDestroy {
 
   close(): void {
     this.showNotification = 'hide';
+    setTimeout(() => this.show = false, 1000);
     clearTimeout(this.notificationShowId);
     this.notificationsService.setNotification(null);
   }
