@@ -9,11 +9,14 @@ import { LoginPageComponent } from './components/login-page/login-page.component
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslocoRootModule } from './transloco-root.module';
+import { NotificationComponent } from './components/notification/notification.component';
+import { MaterialModule } from './material.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,
@@ -23,6 +26,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     TranslocoRootModule,
+    MaterialModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

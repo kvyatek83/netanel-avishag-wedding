@@ -89,5 +89,21 @@
     "hours": "שעות",
     "minutes": "דקות",
     "seconds": "שניות"
+  },
+  "notifications": {
+    "title": {
+      "info": "מידע",
+      "success": "מאושר",
+      "warning": "אזהרה",
+      "error": "שגיאה"
+    },
+    "errors": {
+      "userNotFound": "{{user}} לא נמצא",
+      "useraUthorized": "{{user}} לא מאושר כניסה",
+      "missingGuestId": "קישור לא תקין - מזהה אורח חסר",
+      "wrongGuestId": "מזהה אורח <{{user}}> לא תקין",
+      "emptyGuestList": "רשימה ריקה",
+      "general": "שגיאה לא מוכרת"
+    }
   }
 }

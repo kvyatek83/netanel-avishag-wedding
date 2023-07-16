@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken, checkRole } = require("./auth-service");
 const db = require("./database-utils");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -10,13 +9,13 @@ router.post("/login", async (req, res) => {
   const user = users.find((user) => user.username === req.body.username);
   if (!user) {
     console.log(`No user ${req.body.username} found`);
-    return res.status(404).send("No user found.");
+    return res.status(404).send({ message: `userNotFound`, params: req.body.username});
   }
 
   const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
   if (!passwordIsValid) {
     console.log(`User ${req.body.username} is not authorized!`);
-    return res.status(401).send({ auth: false, token: null });
+    return res.status(401).send({ message: `useraUthorized`, params: req.body.username});
   }
 
   const token = jwt.sign(
@@ -30,8 +29,5 @@ router.post("/login", async (req, res) => {
   res.status(200).send({ auth: true, token: token });
 });
 
-router.get("/api/hello", (req, res) => {
-  res.status(200).send("Hello world");
-});
 
 module.exports = router;

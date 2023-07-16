@@ -41,10 +41,6 @@ module.exports = {
     return csvWriter.writeRecords([user]);
   },
   async overrideUsersInCSV(newUsers) {
-    if (!newUsers || newUsers.length === 0) {
-      // error
-    }
-
     const header = Object.keys(newUsers[0]).map((key) => {
       return { id: key, title: key };
     });
@@ -83,10 +79,6 @@ module.exports = {
     });
   },
   async updateUsers(usersToUpdate) {
-    if (!usersToUpdate || usersToUpdate.length === 0) {
-      // error
-    }
-
     const header = Object.keys(usersToUpdate[0]).map((key) => {
       return { id: key, title: key };
     });
@@ -96,6 +88,7 @@ module.exports = {
     usersToUpdate.forEach((newUser) => {
       const userIndex = users.findIndex((user) => user.id === newUser.id);
 
+      // bug
       // fix phone numbers
       if (userIndex !== -1 && users[userIndex].role !== "admin" ) {
         if (!newUser.deleted) {
@@ -111,7 +104,6 @@ module.exports = {
     const csvWriter = createCsvWriter({
       path: csvFile,
       header: header,
-      alwaysQuote: true,
     });
 
     await csvWriter.writeRecords(users);

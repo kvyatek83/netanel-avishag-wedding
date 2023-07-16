@@ -1,0 +1,23 @@
+<div class="toast active" [@showHideNotification]="showNotification">
+  <div class="toast-content">
+    <div class="check" [style.background-color]="color">
+      <mat-icon>{{ icon }}</mat-icon>
+    </div>
+    <div class="message" [class.rtl]="isRtl">
+      <span class="text text-1">{{ title }}</span>
+      <span class="text text-2">{{ message }}</span>
+    </div>
+  </div>
+  <div class="close" (click)="close()">
+    <mat-icon
+      aria-hidden="false"
+      aria-label="Example home icon"
+      fontIcon="close_outline"
+    ></mat-icon>
+  </div>
+  <ng-container *ngIf="showNotification === 'show'">
+    <div class="progress">
+      <div class="inner-progress" [style.background-color]="color"></div>
+    </div>
+  </ng-container>
+</div>

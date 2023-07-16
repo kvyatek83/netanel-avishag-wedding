@@ -66,6 +66,10 @@ router.get('/admin/download-db', verifyToken, checkRole("admin"), async(req, res
 });
 
 router.post('/admin/replace-db', verifyToken, checkRole("admin"), async(req, res) => {
+  if (!req.body.users || req.body.users.length === 0) {
+    return res.status(400).send({ message: `emptyGuestList`});
+  }
+
   db.overrideUsersInCSV(req.body.users);
 
   const users = await db.parseUsersToGuestList();
@@ -73,6 +77,10 @@ router.post('/admin/replace-db', verifyToken, checkRole("admin"), async(req, res
 });
 
 router.post('/admin/save-changes-to-db', verifyToken, checkRole("admin"), async(req, res) => {
+  if (!req.body.users || req.body.users.length === 0) {
+    return res.status(400).send({ message: `emptyGuestList`});
+  }
+
   await db.updateUsers(req.body.users);
 
   const users = await db.parseUsersToGuestList();

@@ -37,9 +37,8 @@ export class LoginPageComponent implements OnDestroy {
   }
 
   onSubmit(): void {
-    this.loading = true;
     if (this.signInForm.valid) {
-      console.log('Form Submitted:', this.signInForm.value);
+      this.loading = true;
       this.authService
         .login(
           this.signInForm.get('username')?.value,
@@ -51,12 +50,10 @@ export class LoginPageComponent implements OnDestroy {
 
           if (allowed) {
             this.router.navigate(['/admin']);
-          } else {
-            console.log('error');
           }
         });
     } else {
-      console.log('Form is invalid');
+      console.error('Form is invalid');
     }
   }
 }

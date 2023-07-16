@@ -1,10 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { Subject, catchError, combineLatest, of, take, takeUntil } from 'rxjs';
 import { AuthService, GuestDetails } from 'src/app/services/auth.service';
 import { LanguageService } from 'src/app/services/lang.service';
+import { NotificationsService } from 'src/app/services/notifications.service';
 
 interface WeddingDetails {
   wazeLink: string;
@@ -19,9 +26,11 @@ interface WeddingDetails {
   weddingLocation: string;
 }
 
-export function NumberValidator(control: AbstractControl): ValidationErrors | null {
+export function NumberValidator(
+  control: AbstractControl
+): ValidationErrors | null {
   const value = control.value;
-  
+
   if (isNaN(value) || value <= 0) {
     return { invalidNumber: 'Number needs to be bigger than 1.' };
   }
@@ -57,7 +66,9 @@ export class GuestComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private languageService: LanguageService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private notificationsService: NotificationsService,
+    private translocoService: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -81,9 +92,14 @@ export class GuestComponent implements OnInit, OnDestroy {
 
   guestConfirmationStatus(): void {
     console.log(this.form.value);
-    // sent to server
+    if (this.form.valid) {
+       // sent to server
     // amount
     // confirmation
+    // id
+    } else {
+      console.log('Form is invalid!!!');
+    }
   }
 
   whatsUp(): void {
@@ -92,7 +108,12 @@ export class GuestComponent implements OnInit, OnDestroy {
 
   private initGuestAndWeddingDetails(): void {
     if (!this.userUuid) {
-      console.log('error');
+      this.notificationsService.setNotification({
+        type: 'ERROR',
+        message: this.translocoService.translate(
+          'notifications.errors.missingGuestId'
+        ),
+      });
       this.isLoading = false;
     } else {
       combineLatest([
@@ -104,10 +125,28 @@ export class GuestComponent implements OnInit, OnDestroy {
         .pipe(
           take(1),
           catchError((error) => {
-            if (error.status === 400) {
-              // Display error for user -> please use the givin link to enter
-            } else if (error.status === 404) {
-              // Dispaly error for user -> are you sure the you pressed the currect link? try again
+            if (error.status === 404) {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  `notifications.errors.${error.error.message}`,
+                  { user: error.error.params }
+                ),
+              });
+            } else if (error.status === 401) {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  `notifications.errors.${error.error.message}`,
+                ),
+              });
+            } else {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  'notifications.errors.general'
+                ),
+              });
             }
             this.isLoading = false;
             return of([null, null]);
@@ -117,8 +156,11 @@ export class GuestComponent implements OnInit, OnDestroy {
           if (guestDetails && wedding) {
             this.guest = guestDetails;
             this.authService.setGuestDetails(guestDetails);
-            if (Number(guestDetails?.participants) > 3) {
-              this.form.setValue({participants: Number(guestDetails?.participants), transport: guestDetails.transport})
+            if (Number(guestDetails?.participants) > 0) {
+              this.form.setValue({
+                participants: Number(guestDetails?.participants),
+                transport: guestDetails.transport,
+              });
             }
             this.creatWeddingDetails(wedding);
             this.isLoading = false;

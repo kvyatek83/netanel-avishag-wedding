@@ -93,5 +93,21 @@
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds"
+  },
+  "notifications": {
+    "title": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error"
+    },
+    "errors": {
+      "userNotFound": "No user {{user}} found",
+      "useraUthorized": "User {{user}} is not authorized!",
+      "missingGuestId": "Wedding link is broken",
+      "wrongGuestId": "No user for {{user}} found",
+      "emptyGuestList": "List is empty.",
+      "general": "Unknownen error"
+    }
   }
 }
