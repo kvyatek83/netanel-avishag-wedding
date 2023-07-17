@@ -11,7 +11,6 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding-top: 20px;
 
     &__main {
       margin: auto;
@@ -72,6 +71,12 @@
           font-size: 16px;
         }
       }
+
+      @media only screen and (max-width: 360px) {
+        &__header {
+          font-size: 33px;
+        }
+      }
     }
 
     &__additional {
@@ -121,9 +126,6 @@
 
         &__item {
           gap: 10px;
-
-          &__description {
-          }
         }
       }
     }
@@ -133,6 +135,7 @@
     &__content {
       flex-direction: column;
       gap: 30px;
+      padding-top: 20px;
 
       &__additional {
         flex-direction: row;

@@ -122,6 +122,7 @@ export class GuestListComponent implements OnDestroy {
   initFilter(): void {
     this.filterType.valueChanges.subscribe((type) => {
       if (type !== null) {
+        this.filterValue.setValue('');
         this.dataSource.filterPredicate = (
           data: WeddingGuest,
           filterValue: string
@@ -237,6 +238,7 @@ export class GuestListComponent implements OnDestroy {
       .afterClosed()
       .pipe(filter((user) => !!user))
       .subscribe((user: WeddingGuest) => {
+        user.participants = user.participants.toString();
         this.reloadGuestListData([...this.dataSource.data, user]);
       });
   }
