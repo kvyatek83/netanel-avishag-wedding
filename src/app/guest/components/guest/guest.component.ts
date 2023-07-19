@@ -91,12 +91,42 @@ export class GuestComponent implements OnInit, OnDestroy {
   }
 
   guestConfirmationStatus(): void {
-    console.log(this.form.value);
     if (this.form.valid) {
-       // sent to server
-    // amount
-    // confirmation
-    // id
+      
+      const body = {
+        id: this.userUuid,
+        confirmation: true,
+        ...this.form.value
+      };
+
+      this.http.post<GuestDetails>(`/api/guest/${this.userUuid}/save-the-date`, body).pipe(take(1), catchError(error => {
+        if (error.status === 404) {
+          this.notificationsService.setNotification({
+            type: 'ERROR',
+            message: this.translocoService.translate(`notifications.errors.${error.error.message}`, { user: error.error.params }),
+          });
+          } else if (error.status === 401) {
+          this.notificationsService.setNotification({
+            type: 'ERROR',
+            message: this.translocoService.translate(`notifications.errors.${error.error.message}`),
+          });
+          } else {
+            this.notificationsService.setNotification({
+              type: 'ERROR',
+              message: this.translocoService.translate('notifications.errors.general'),
+            });
+          }
+          
+          console.error(error);
+        return of(null)
+      })).subscribe((res: any) => {
+       if (res) {
+        this.notificationsService.setNotification({
+          type: 'SUCCESS',
+          message: this.translocoService.translate(`notifications.success.${res?.message}`),
+        });
+       }
+      });
     } else {
       console.log('Form is invalid!!!');
     }

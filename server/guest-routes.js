@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require("./database-utils");
 const utils = require("./utils");
 
-
 router.get("/guest/:id", async (req, res) => {
   const userId = req.params.id;
 
@@ -16,9 +15,7 @@ router.get("/guest/:id", async (req, res) => {
   const user = users.find((user) => user.id === userId);
   if (!user) {
     console.log(`No user for ${userId} found`);
-    return res
-      .status(404)
-      .send({ message: `wrongGuestId`, params: userId });
+    return res.status(404).send({ message: `wrongGuestId`, params: userId });
   }
 
   delete user.password;
@@ -44,12 +41,39 @@ router.get("/guest/:id/wedding-details", async (req, res) => {
   const user = users.find((user) => user.id === userId);
   if (!user) {
     console.log(`No user for ${userId} found`);
-    return res
-      .status(404)
-      .send({ message: `userNotFound`, params: userId });
+    return res.status(404).send({ message: `userNotFound`, params: userId });
   }
 
   res.status(200).send(db.getWeddingDetails());
+});
+
+router.post("/guest/:id/save-the-date", async (req, res) => {
+  const userId = req.body.id;
+
+  if (!userId) {
+    return res.status(401).send({ message: `missingGuestId` });
+  }
+
+  try {
+    await db.updateUserStatus(
+      req.body.id,
+      req.body.confirmation,
+      req.body.transport,
+      req.body.participants
+    );
+    res.status(200).send({ message: `saveTheDate` });
+  } catch ({ name, message }) {
+
+    console.error(message);
+
+    if (message === "NOT_FOUND") {
+      return res
+        .status(404)
+        .send({ message: `userNotFound`, params: req.body.id });
+    } else {
+      return res.status(500).send({ message: `general` });
+    }
+  }
 });
 
 module.exports = router;

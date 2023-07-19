@@ -68,6 +68,7 @@
     "guestsTitle": "Send message for {{selectedUsers}} guests",
     "invitation": "Send invitation photo",
     "link": "Insert invitation link",
+    "guestName": "Insert guest name",
     "messagePlaceholdeer": "Write you message here...",
     "submit": "Send",
     "cancel": "Cancel"
@@ -107,7 +108,17 @@
       "missingGuestId": "Wedding link is broken",
       "wrongGuestId": "No user for {{user}} found",
       "emptyGuestList": "List is empty.",
+      "fileFormat": "Invalid file format. Please select a CSV or JSON file.",
       "general": "Unknownen error"
+    },
+    "warning": {
+      "superAdmin": "This actions is risky, please be careful!"
+    },
+    "info": {
+      "convertComplete": "File format is good and almost ready"
+    },
+    "success": {
+      "saveTheDate": "You submit saved!"
     }
   }
 }

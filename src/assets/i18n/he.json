@@ -64,6 +64,7 @@
     "guestsTitle": "שליחת הודעה אל {{selectedUsers}} אורחים",
     "invitation": "שליחת הזמנה מצורפת",
     "link": "הוספת לינק לאתר",
+    "guestName": "הוספת שם אורח/ת",
     "messagePlaceholdeer": "הכנסת הודעה חדשה פה...",
     "submit": "שליחה",
     "cancel": "ביטול"
@@ -103,7 +104,18 @@
       "missingGuestId": "קישור לא תקין - מזהה אורח חסר",
       "wrongGuestId": "מזהה אורח <{{user}}> לא תקין",
       "emptyGuestList": "רשימה ריקה",
+      "fileFormat": "קובץ לא חוקי. נא לבחור רק קובץ CSV או JSON.",
+      
       "general": "שגיאה לא מוכרת"
+    },
+    "warning": {
+      "superAdmin": "הפעולה הבאה מסוכנת, לפעול בזהירות!"
+    },
+    "info": {
+      "convertComplete": "הקובץ מתאים וכמעט סיים לטעון"
+    },
+    "success": {
+      "saveTheDate": "הבחירה שלך נשמרה!"
     }
   }
 }

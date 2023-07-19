@@ -108,45 +108,34 @@ module.exports = {
 
     await csvWriter.writeRecords(users);
   },
-  // async updateUserRole(username, newRole) {
-  //     const users = await db.readUsersFromCSV(csvFile);
-  //     const userIndex = users.findIndex((user) => user.username === username);
+  async updateUserStatus(id, confirmation, transport, participants) {
+      const users = await this.readUsersFromCSV(csvFile);
+      const userIndex = users.findIndex((user) => user.id === id);
+      if (userIndex === -1) {
+        throw new Error('NOT_FOUND');
+      }
 
-  //     if (userIndex === -1) {
-  //       throw new Error('User not found');
-  //     }
+      users[userIndex].confirmation = confirmation;
+      users[userIndex].transport = transport;
+      users[userIndex].participants = participants;
 
-  //     users[userIndex].role = newRole;
+      const csvWriter = createCsvWriter({
+        path: csvFile,
+        header: [
+          { id: 'id', title: 'id' },
+          { id: 'username', title: 'username' },
+          { id: 'password', title: 'password' },
+          { id: 'role', title: 'role' },
+          { id: 'phone', title: 'phone' },
+          { id: 'email', title: 'email' },
+          { id: 'confirmation', title: 'confirmation' },
+          { id: 'transport', title: 'transport' },
+          { id: 'participants', title: 'participants' },
+        ],
+      });
 
-  //     // Re-write the entire CSV with the updated information
-  //     const csvWriter = createCsvWriter({
-  //       path: csvFile,
-  //       header: [
-  //         { id: 'id', title: 'id' },
-  //         { id: 'username', title: 'username' },
-  //         { id: 'password', title: 'password' },
-  //         { id: 'role', title: 'role' },
-  //         { id: 'phone', title: 'phone' },
-  //         { id: 'email', title: 'email' },
-  //         { id: 'confirmation', title: 'confirmation' },
-  //         { id: 'transport', title: 'transport' },
-  //         { id: 'participants', title: 'participants' },
-  //       ],
-  //       alwaysQuote: true,
-  //     });
-
-  //     await csvWriter.writeRecords(users);
-  // },
-  // async getUserByName(username) {
-  //     const users = await db.readUsersFromCSV(csvFile);
-  //     const userIndex = users.findIndex((user) => user.username === username);
-
-  //     if (userIndex === -1) {
-  //       throw new Error(`User ${username} not found`);
-  //     }
-
-  //     return users[userIndex];
-  // },
+      await csvWriter.writeRecords(users);
+  },
   getWeddingDetails() {
     return {
       wazeLink: `https://www.waze.com/ul?q=${
