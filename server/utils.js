@@ -46,7 +46,7 @@ module.exports = {
         return str.charAt(0) == '+' || str.charAt(0) == '0' && str.length < 1 && str.length > 11;
     },
 
-    buildGuestLink(message, link) {
-        return message.replace('$1', link)
+    buildGuestLink(message, guestName, link) {
+        return message.replace('$0', guestName).replace('$1', link)
     }
 }

@@ -12,13 +12,18 @@
         <mat-checkbox formControlName="invitation">{{
           t("invitation")
         }}</mat-checkbox>
-        <button mat-raised-button color="primary" (click)="addLink()">
-          {{ t("link") }}
-        </button>
+        <div class="add-to-message-controls">
+          <button mat-raised-button color="primary" (click)="addToMessage('guestName')">
+            {{ t("guestName") }}
+          </button>
+          <button mat-raised-button color="primary" (click)="addToMessage('link')">
+            {{ t("link") }}
+          </button>
+        </div>
       </div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t("messagePlaceholdeer") }}</mat-label>
-        <textarea matInput formControlName="message"></textarea>
+        <textarea matInput #messageBox formControlName="message"></textarea>
       </mat-form-field>
     </form>
   </mat-dialog-content>

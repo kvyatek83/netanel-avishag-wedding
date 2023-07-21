@@ -10,7 +10,18 @@
 
   .message-controls {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 5px;
+
+    .add-to-message-controls {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+
+      button {
+        height: 50px;
+      }
+    }
   }
 }
 
@@ -52,4 +63,8 @@
 
 .action-button {
   margin: 0 10px;
+}
+
+::ng-deep .mat-mdc-checkbox .mdc-checkbox {
+  padding-right: 0 !important;
 }
