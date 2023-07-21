@@ -60,6 +60,10 @@
     "confirmation": "Guest is confirm",
     "transport": "Guest need transport",
     "participants": "Total guests",
+    "required": "Feild is required",
+    "participantsError": "Participants under 0 not allowed",
+    "phoneInvalidError": "Not an Israeli phone number",
+    "phoneExistsError": "Phone number already exist",
     "submit": "Submit",
     "cancel": "Cancel"
   },
@@ -118,7 +122,8 @@
       "convertComplete": "File format is good and almost ready"
     },
     "success": {
-      "saveTheDate": "You submit saved!"
+      "saveTheDate": "You submit saved!",
+      "file": "The file was successfully download"
     }
   }
 }

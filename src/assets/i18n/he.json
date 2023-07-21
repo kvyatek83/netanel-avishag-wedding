@@ -56,6 +56,10 @@
     "confirmation": "מאושר הגעה",
     "transport": "צורך בהסעה",
     "participants": "סך הכל יגיעו",
+    "required": "חובה למלא את השדה",
+    "participantsError": "מספר משתתפים לא ירד מ-0",
+    "phoneInvalidError": "מספר ישראלי לא חוקי",
+    "phoneExistsError": "מספר טלפון קיים ברשימה",
     "submit": "אישור",
     "cancel": "ביטול"
   },
@@ -115,7 +119,8 @@
       "convertComplete": "הקובץ מתאים וכמעט סיים לטעון"
     },
     "success": {
-      "saveTheDate": "הבחירה שלך נשמרה!"
+      "saveTheDate": "הבחירה שלך נשמרה!",
+      "file": "הקובץ ירד בהצלחה"
     }
   }
 }
