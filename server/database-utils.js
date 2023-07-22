@@ -79,22 +79,19 @@ module.exports = {
     });
   },
   async updateUsers(usersToUpdate) {
-    const header = Object.keys(usersToUpdate[0]).map((key) => {
+    const users = await this.readUsersFromCSV(csvFile);
+
+    const header = Object.keys(users[0]).map((key) => {
       return { id: key, title: key };
     });
 
-    const users = await this.readUsersFromCSV(csvFile);
 
     usersToUpdate.forEach((newUser) => {
       const userIndex = users.findIndex((user) => user.id === newUser.id);
 
-      // bug
-      // fix phone numbers
-      if (userIndex !== -1 && users[userIndex].role !== "admin" ) {
-        if (!newUser.deleted) {
-            users[userIndex] = newUser;
-        } else {
-            users.splice(userIndex, 1)
+      if (userIndex !== -1) {
+        if (users[userIndex].role !== "admin") {
+          newUser.deleted ? users.splice(userIndex, 1) : users[userIndex] = newUser;
         }
       } else {
         users.push(newUser);

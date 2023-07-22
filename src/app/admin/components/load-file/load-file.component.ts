@@ -201,7 +201,7 @@ export class LoadFileComponent implements OnDestroy {
     if (file.type === 'text/csv') {
       fileReader.readAsText(file);
       fileReader.onload = () => {
-        const csvData = fileReader.result;
+        const csvData = (fileReader?.result as string)?.trim();
         if (this.data.uploadType === 'remote') {
           Papa.parse(csvData as string, {
             header: true,

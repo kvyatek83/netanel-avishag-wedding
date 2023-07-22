@@ -123,8 +123,6 @@ router.post(
   verifyToken,
   checkRole("admin"),
   async (req, res) => {
-    console.log(req.body);
-
     if (!req.body.message) {
       return res.status(400).send({ message: "Message is empty." });
     }
@@ -147,6 +145,8 @@ router.post(
 
     // call twilio
     // req.body.invitation
+
+    // return better notification
     res.status(200).send({ messages: messages });
   }
 );

@@ -82,7 +82,8 @@
               ></app-boolean-span>
               <app-guest-field
                 *ngIf="element.editing === true"
-                [externalFormControl]="guestFormControls[column]"
+                [externalFormControl]="guestFormControls.controls[column]"
+                [isRtl]="isRtl"
                 [label]="column"
               ></app-guest-field>
             </td>
@@ -97,6 +98,7 @@
                     mat-button
                     (click)="editRow(element, true)"
                     [matTooltip]="t('save')"
+                    [disabled]="guestFormControls && guestFormControls.invalid"
                   >
                     <mat-icon class="actions-icons__edit">done_outline</mat-icon>
                   </button>
@@ -202,7 +204,7 @@
       </ng-container>
       <!-- Define paginator -->
       <mat-paginator
-        [pageSizeOptions]="[10, 20]"
+        [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
         aria-label="Select page of users"
       ></mat-paginator>
     </div>

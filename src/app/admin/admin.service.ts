@@ -1,7 +1,6 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable, catchError, map, of, take, tap } from 'rxjs';
+import { Observable, take } from 'rxjs';
 
 export interface WeddingGuest {
   confirmation: boolean;
@@ -17,8 +16,6 @@ export interface WeddingGuest {
   deleted?: boolean;
 }
 
-// Add user errors
-
 @Injectable({
   providedIn: 'root',
 })
@@ -33,6 +30,10 @@ export class AdminService {
 
   downloadDb(): Observable<Blob> {
     return this.http.get<Blob>('/api/admin/download-db', {responseType: 'blob' as 'json'}).pipe(take(1));
+  }
+
+  downloadGuestList(): Observable<Blob> {
+    return this.http.get<Blob>('/api/admin/download', {responseType: 'blob' as 'json'}).pipe(take(1));
   }
 
   replaceDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {

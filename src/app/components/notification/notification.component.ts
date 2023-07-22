@@ -130,7 +130,7 @@ export class NotificationComponent implements OnDestroy {
             this.notificationsService.setNotification(null);
 
             setTimeout(() => this.show = false, 1000);
-          }, 50000);
+          }, 5000);
         }
       });
   }

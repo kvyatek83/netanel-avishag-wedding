@@ -4,11 +4,20 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { LoadFileComponent } from 'src/app/admin/components/load-file/load-file.component';
 import { v4 } from 'uuid';
 import {
+  Observable,
   Subject,
   catchError,
   filter,
@@ -16,11 +25,30 @@ import {
   switchMap,
   take,
   takeUntil,
+  timer,
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { LanguageService } from 'src/app/services/lang.service';
 import { NewGuestComponent } from '../new-guest/new-guest.component';
 import { SendMessageComponent } from '../send-message/send-message.component';
+import { NotificationsService } from 'src/app/services/notifications.service';
+import { TranslocoService } from '@ngneat/transloco';
+
+export function PhoneValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  const phone = control.value;
+  const israeli_phone_regex = /^((\+972|0)?(([23489]{2}\d{7})|[57]\d{8}))$/;
+
+  if (phone) {
+    if (israeli_phone_regex.test(phone)) {
+      return null; // return null if validation passes
+    } else {
+      return { phoneInvalidError: true }; // return error object if validation fails
+    }
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-guest-list',
@@ -43,7 +71,7 @@ export class GuestListComponent implements OnDestroy {
   isLoading = true;
   rowDef: string[] = [];
 
-  guestFormControls: { [key: string]: FormControl } = {};
+  guestFormControls: FormGroup = this.fb.group({});
   editIsOn = false;
   filterValue = new FormControl('');
   filterType = new FormControl('');
@@ -59,7 +87,10 @@ export class GuestListComponent implements OnDestroy {
     private adminService: AdminService,
     public dialog: MatDialog,
     private router: Router,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private notificationsService: NotificationsService,
+    private translocoService: TranslocoService,
+    private fb: FormBuilder
   ) {
     this.languageService.rtl$
       .pipe(takeUntil(this.destroy$))
@@ -119,56 +150,39 @@ export class GuestListComponent implements OnDestroy {
     );
   }
 
-  initFilter(): void {
-    this.filterType.valueChanges.subscribe((type) => {
-      if (type !== null) {
-        this.filterValue.setValue('');
-        this.dataSource.filterPredicate = (
-          data: WeddingGuest,
-          filterValue: string
-        ): boolean => {
-          if (filterValue === 'true' || filterValue === 'false') {
-            const val = filterValue === 'true' ? true : false;
-            return (data as any)[type] === val;
-          } else {
-            return (data as any)[type].toLowerCase().includes(filterValue);
-          }
-        };
-      }
-    });
-
-    this.filterValue.valueChanges.subscribe((value) => {
-      if (value === null || value === undefined) {
-        value = '';
-      }
-
-      this.dataSource.filter = value.toString().trim().toLowerCase();
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
-    });
-  }
-
   editRow(guest: WeddingGuest, saveChanges: boolean) {
     if (saveChanges) {
       this.saveAllValuesForRowIndex(guest);
     }
 
-    this.guestFormControls = {};
+    this.guestFormControls = this.fb.group({});
     this.editIsOn = false;
     guest.editing = false;
   }
 
   startEditGuestDetails(guest: WeddingGuest): void {
     this.editIsOn = true;
+    const initGuestForm: { [key: string]: FormControl } = {};
     Object.keys(guest).forEach((key) => {
-      if (this.guestFormControls) {
-        this.guestFormControls[key] = new FormControl(
-          (guest as any)[key],
-          Validators.required
-        );
+      if (key === 'phone') {
+        initGuestForm[key] = new FormControl((guest as any)[key], {
+          validators: [Validators.required, PhoneValidator],
+          asyncValidators: [this.israeliPhoneExistsValidator(guest.phone)],
+        });
+      } else if (key === 'participants') {
+        initGuestForm[key] = new FormControl((guest as any)[key], [
+          Validators.required,
+          Validators.min(0),
+        ]);
+      } else if (key === 'hebrewname') {
+        initGuestForm[key] = new FormControl((guest as any)[key], [
+          Validators.required,
+        ]);
+      } else {
+        initGuestForm[key] = new FormControl((guest as any)[key]);
       }
     });
+    this.guestFormControls = this.fb.group(initGuestForm);
 
     guest.editing = !guest.editing;
   }
@@ -197,11 +211,8 @@ export class GuestListComponent implements OnDestroy {
   saveAllValuesForRowIndex(row: any) {
     this.displayedColumns.forEach((col) => {
       let columnName = col === 'actions' ? 'editing' : col;
-      row[columnName] = this.guestFormControls[columnName].value;
+      row[columnName] = this.guestFormControls?.get(columnName)?.value;
     });
-
-    console.log(`Saving row data to the server...`);
-    // Implement logic to save rowData to your server API
   }
 
   isAllSelected() {
@@ -239,6 +250,7 @@ export class GuestListComponent implements OnDestroy {
       .pipe(filter((user) => !!user))
       .subscribe((user: WeddingGuest) => {
         user.participants = user.participants.toString();
+        user.phone = this.convertToIsraeliPhone(user.phone);
         this.reloadGuestListData([...this.dataSource.data, user]);
       });
   }
@@ -300,19 +312,43 @@ export class GuestListComponent implements OnDestroy {
           );
         })
       )
-      .subscribe((a) => {
+      .subscribe((a: any) => {
         this.selection.clear();
-        console.log(a);
+        this.notificationsService.setNotification({
+          type: 'INFO',
+          message: a.messages[0],
+        });
       });
   }
 
   downloadDb(): void {
-    this.adminService.downloadDb().subscribe((file: Blob) => {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(file);
-      link.download = 'guest-list.csv';
-      link.click();
-    });
+    this.adminService
+      .downloadDb()
+      .pipe(
+        catchError((error) => {
+          this.notificationsService.setNotification({
+            type: 'ERROR',
+            message: this.translocoService.translate(
+              'notifications.errors.general'
+            ),
+          });
+          return of(null);
+        })
+      )
+      .subscribe((file: Blob | null) => {
+        if (file) {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(file);
+          link.download = 'guest-list.csv';
+          link.click();
+          this.notificationsService.setNotification({
+            type: 'SUCCESS',
+            message: this.translocoService.translate(
+              'notifications.success.file'
+            ),
+          });
+        }
+      });
   }
 
   uploadNewFileToDB(): void {
@@ -339,17 +375,21 @@ export class GuestListComponent implements OnDestroy {
 
   saveListToDB(): void {
     this.isLoading = true;
-    // const updatedGuestList = this.dataSource.data.filter((guest) => {
-    //   const userIndex = this.originalGuestsState.findIndex(
-    //     (user) => user.id === guest.id
-    //   );
+    const updatedGuestList = this.dataSource.data
+      .filter((guest) => {
+        const userIndex = this.originalGuestsState.findIndex(
+          (user) => user.id === guest.id
+        );
 
-    //   // not fully work
-    //   return guest?.deleted !== true && userIndex > -1;
-    // });
+        return userIndex !== -1 || (userIndex === -1 && !guest?.deleted);
+      })
+      .map((user) => {
+        user.phone = this.convertToIsraeliPrefixedPhone(user.phone);
+        return user;
+      });
 
     this.adminService
-      .saveChangesToDB(this.dataSource.data)
+      .saveChangesToDB(updatedGuestList)
       .pipe(take(1))
       .subscribe((newGuestList: WeddingGuest[]) => {
         this.initGuestsTable(newGuestList);
@@ -403,5 +443,77 @@ export class GuestListComponent implements OnDestroy {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     }, 0);
+  }
+
+  private initFilter(): void {
+    this.filterType.valueChanges.subscribe((type) => {
+      if (type !== null) {
+        this.filterValue.setValue('');
+        this.dataSource.filterPredicate = (
+          data: WeddingGuest,
+          filterValue: string
+        ): boolean => {
+          if (filterValue === 'true' || filterValue === 'false') {
+            const val = filterValue === 'true' ? true : false;
+            return (data as any)[type] === val;
+          } else {
+            return (data as any)[type].toLowerCase().includes(filterValue);
+          }
+        };
+      }
+    });
+
+    this.filterValue.valueChanges.subscribe((value) => {
+      if (value === null || value === undefined) {
+        value = '';
+      }
+
+      this.dataSource.filter = value.toString().trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    });
+  }
+
+  private convertToIsraeliPhone(phone: string): string {
+    if (phone.startsWith('+972')) {
+      return phone.replace('+972', '0');
+    }
+    return phone;
+  }
+
+  private convertToIsraeliPrefixedPhone(phone: string): string {
+    if (phone.startsWith('05')) {
+      return phone.replace('05', '+9725');
+    }
+    return phone;
+  }
+
+  private israeliPhoneExistsValidator(
+    currentGuestPhone: string
+  ): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return timer(0).pipe(
+        switchMap(() => {
+          const phone = control.value;
+          if (
+            this.convertToIsraeliPhone(currentGuestPhone) ===
+            this.convertToIsraeliPhone(phone)
+          ) {
+            return of(null);
+          }
+          const index = this.dataSource.data.findIndex(
+            (user: WeddingGuest) =>
+              this.convertToIsraeliPhone(user.phone) ===
+              this.convertToIsraeliPhone(phone)
+          );
+          if (index > -1) {
+            return of({ phoneExistsError: true });
+          } else {
+            return of(null);
+          }
+        })
+      );
+    };
   }
 }
