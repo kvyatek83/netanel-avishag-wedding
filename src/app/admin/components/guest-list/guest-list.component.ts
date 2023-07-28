@@ -288,10 +288,12 @@ export class GuestListComponent implements OnDestroy {
               if (user.id) {
                 return guest.id === user.id;
               } else if (guest.phone === user.phone) {
-                user.id = guest.phone === user.phone ? guest.id : v4();
+                user.id = guest.id;
                 return true;
+              } else {
+                user.id = v4();
+                return false;
               }
-              return false;
             });
             if (guestIndex > -1) {
               cloneGuestList[guestIndex] = user;
@@ -302,6 +304,7 @@ export class GuestListComponent implements OnDestroy {
   
           this.reloadGuestListData(cloneGuestList);
         } else {
+          users.forEach(user => user.id = v4());
           this.initGuestsTable(users);
         }
       });
@@ -420,6 +423,7 @@ export class GuestListComponent implements OnDestroy {
       .saveChangesToDB(updatedGuestList)
       .pipe(take(1))
       .subscribe((newGuestList: WeddingGuest[]) => {
+        this.originalGuestsState = JSON.parse(JSON.stringify(newGuestList));
         this.initGuestsTable(newGuestList);
       });
   }
