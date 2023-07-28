@@ -69,7 +69,6 @@ export class GuestListComponent implements OnDestroy {
 
   isRtl = false;
   isLoading = true;
-  rowDef: string[] = [];
 
   guestFormControls: FormGroup = this.fb.group({});
   editIsOn = false;
@@ -101,14 +100,22 @@ export class GuestListComponent implements OnDestroy {
         take(1),
         catchError((error) => {
           if (error.status === 403 || error.status === 500) {
-            console.log('Please login');
+            this.notificationsService.setNotification({
+              type: 'ERROR',
+              message: this.translocoService.translate(
+                'notifications.errors.loginAgain'
+              ),
+            });
             this.router.navigate(['/login']);
           }
-          return of([]);
+          return of(null);
         })
       )
-      .subscribe((users: WeddingGuest[]) => {
-        this.initGuestsTable(users);
+      .subscribe((users: WeddingGuest[] | null) => {
+        if (users) {
+          this.originalGuestsState = JSON.parse(JSON.stringify(users));
+          this.initGuestsTable(users);
+        }
       });
   }
 
@@ -241,7 +248,7 @@ export class GuestListComponent implements OnDestroy {
     const dialogRef = this.dialog.open(NewGuestComponent, {
       panelClass: 'dialog-responsive',
       data: {
-        users: this.dataSource.data.map((guest) => guest.phone),
+        users: this.dataSource?.data ? this.dataSource.data.map((guest) => guest.phone) : [],
       },
     });
 
@@ -251,7 +258,12 @@ export class GuestListComponent implements OnDestroy {
       .subscribe((user: WeddingGuest) => {
         user.participants = user.participants.toString();
         user.phone = this.convertToIsraeliPhone(user.phone);
-        this.reloadGuestListData([...this.dataSource.data, user]);
+
+        if (this.dataSource) {
+          this.reloadGuestListData([...this.dataSource.data, user]);
+        } else {
+          this.initGuestsTable([user])
+        }
       });
   }
 
@@ -267,27 +279,31 @@ export class GuestListComponent implements OnDestroy {
       .afterClosed()
       .pipe(filter((user) => !!user))
       .subscribe((users: WeddingGuest[]) => {
-        let cloneGuestList: WeddingGuest[] = JSON.parse(
-          JSON.stringify(this.dataSource.data)
-        );
-        users.forEach((user: WeddingGuest) => {
-          const guestIndex = this.dataSource.data.findIndex((guest) => {
-            if (user.id) {
-              return guest.id === user.id;
-            } else if (guest.phone === user.phone) {
-              user.id = guest.phone === user.phone ? guest.id : v4();
-              return true;
+        if (this.dataSource) {
+          let cloneGuestList: WeddingGuest[] = JSON.parse(
+            JSON.stringify(this.dataSource.data)
+          );
+          users.forEach((user: WeddingGuest) => {
+            const guestIndex = this.dataSource.data.findIndex((guest) => {
+              if (user.id) {
+                return guest.id === user.id;
+              } else if (guest.phone === user.phone) {
+                user.id = guest.phone === user.phone ? guest.id : v4();
+                return true;
+              }
+              return false;
+            });
+            if (guestIndex > -1) {
+              cloneGuestList[guestIndex] = user;
+            } else {
+              cloneGuestList = [...cloneGuestList, user];
             }
-            return false;
           });
-          if (guestIndex > -1) {
-            cloneGuestList[guestIndex] = user;
-          } else {
-            cloneGuestList = [...cloneGuestList, user];
-          }
-        });
-
-        this.reloadGuestListData(cloneGuestList);
+  
+          this.reloadGuestListData(cloneGuestList);
+        } else {
+          this.initGuestsTable(users);
+        }
       });
   }
 
@@ -321,6 +337,27 @@ export class GuestListComponent implements OnDestroy {
       });
   }
 
+  downloadList(): void {
+    this.adminService
+    .downloadGuestList()
+    .pipe(
+      catchError((error) => {
+        this.notificationsService.setNotification({
+          type: 'ERROR',
+          message: this.translocoService.translate(
+            'notifications.errors.general'
+          ),
+        });
+        return of(null);
+      })
+    )
+    .subscribe((file: Blob | null) => {
+      if (file) {
+        this.downloadFile(file);
+      }
+    });
+  }
+
   downloadDb(): void {
     this.adminService
       .downloadDb()
@@ -337,16 +374,7 @@ export class GuestListComponent implements OnDestroy {
       )
       .subscribe((file: Blob | null) => {
         if (file) {
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(file);
-          link.download = 'guest-list.csv';
-          link.click();
-          this.notificationsService.setNotification({
-            type: 'SUCCESS',
-            message: this.translocoService.translate(
-              'notifications.success.file'
-            ),
-          });
+          this.downloadFile(file);
         }
       });
   }
@@ -398,21 +426,15 @@ export class GuestListComponent implements OnDestroy {
 
   private initGuestsTable(users: WeddingGuest[]): void {
     if (users?.length > 0) {
-      this.originalGuestsState = JSON.parse(JSON.stringify(users));
       this.displayedColumns = [
         ...Object.keys(users[0])
-          .filter((col) => col !== 'id')
+          .filter((col) => col !== 'id' && col !== 'role' && col !== 'password')
           .sort((curr, next) =>
             curr === 'hebrewname' ? -1 : next === 'hebrewname' ? 1 : 0
           ),
       ];
 
       this.dataSource = new MatTableDataSource(users);
-
-      this.rowDef = [
-        ...Object.keys(users[0]).filter((col) => col !== 'id'),
-        'actions',
-      ];
 
       this.isLoading = false;
 
@@ -421,6 +443,13 @@ export class GuestListComponent implements OnDestroy {
 
       this.reloadGuestListData(users);
     } else {
+      this.notificationsService.setNotification({
+        type: 'WARNING',
+        message: this.translocoService.translate(
+          'notifications.errors.recivedEmptyGuestList'
+        ),
+      });
+      this.isLoading = false;
       console.log('No guests');
     }
   }
@@ -480,6 +509,19 @@ export class GuestListComponent implements OnDestroy {
       return phone.replace('+972', '0');
     }
     return phone;
+  }
+
+  private downloadFile(file: Blob) {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = 'guest-list.csv';
+    link.click();
+    this.notificationsService.setNotification({
+      type: 'SUCCESS',
+      message: this.translocoService.translate(
+        'notifications.success.file'
+      ),
+    });
   }
 
   private convertToIsraeliPrefixedPhone(phone: string): string {

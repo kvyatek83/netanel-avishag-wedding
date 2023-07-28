@@ -67,16 +67,24 @@ module.exports = {
   },
   async parseUsersToGuestList() {
     const users = await this.readUsersFromCSV(csvFile);
-    return users.map((user) => {
-      delete user.password;
-      delete user.role;
-      const confirmation = utils.stringBooleanToBoolean(user.confirmation);
-      const transport = utils.stringBooleanToBoolean(user.transport);
-      user.confirmation = confirmation;
-      user.transport = transport;
-      user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
-      return user;
-    });
+    return users
+      .filter((user) => {
+        if (process?.env.HIDE_ADMINS && process.env.HIDE_ADMINS === 'true') {
+          return user.role !== "admin";
+        }
+
+        return true;
+      })
+      .map((user) => {
+        delete user.password;
+        delete user.role;
+        const confirmation = utils.stringBooleanToBoolean(user.confirmation);
+        const transport = utils.stringBooleanToBoolean(user.transport);
+        user.confirmation = confirmation;
+        user.transport = transport;
+        user.phone = utils.wrapIsraeliPrefixPhoneWithLeadingZeros(user.phone);
+        return user;
+      });
   },
   async updateUsers(usersToUpdate) {
     const users = await this.readUsersFromCSV(csvFile);
@@ -85,13 +93,14 @@ module.exports = {
       return { id: key, title: key };
     });
 
-
     usersToUpdate.forEach((newUser) => {
       const userIndex = users.findIndex((user) => user.id === newUser.id);
 
       if (userIndex !== -1) {
         if (users[userIndex].role !== "admin") {
-          newUser.deleted ? users.splice(userIndex, 1) : users[userIndex] = newUser;
+          newUser.deleted
+            ? users.splice(userIndex, 1)
+            : (users[userIndex] = newUser);
         }
       } else {
         users.push(newUser);
@@ -106,32 +115,32 @@ module.exports = {
     await csvWriter.writeRecords(users);
   },
   async updateUserStatus(id, confirmation, transport, participants) {
-      const users = await this.readUsersFromCSV(csvFile);
-      const userIndex = users.findIndex((user) => user.id === id);
-      if (userIndex === -1) {
-        throw new Error('NOT_FOUND');
-      }
+    const users = await this.readUsersFromCSV(csvFile);
+    const userIndex = users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      throw new Error("NOT_FOUND");
+    }
 
-      users[userIndex].confirmation = confirmation;
-      users[userIndex].transport = transport;
-      users[userIndex].participants = participants;
+    users[userIndex].confirmation = confirmation;
+    users[userIndex].transport = transport;
+    users[userIndex].participants = participants;
 
-      const csvWriter = createCsvWriter({
-        path: csvFile,
-        header: [
-          { id: 'id', title: 'id' },
-          { id: 'username', title: 'username' },
-          { id: 'password', title: 'password' },
-          { id: 'role', title: 'role' },
-          { id: 'phone', title: 'phone' },
-          { id: 'email', title: 'email' },
-          { id: 'confirmation', title: 'confirmation' },
-          { id: 'transport', title: 'transport' },
-          { id: 'participants', title: 'participants' },
-        ],
-      });
+    const csvWriter = createCsvWriter({
+      path: csvFile,
+      header: [
+        { id: "id", title: "id" },
+        { id: "username", title: "username" },
+        { id: "password", title: "password" },
+        { id: "role", title: "role" },
+        { id: "phone", title: "phone" },
+        { id: "email", title: "email" },
+        { id: "confirmation", title: "confirmation" },
+        { id: "transport", title: "transport" },
+        { id: "participants", title: "participants" },
+      ],
+    });
 
-      await csvWriter.writeRecords(users);
+    await csvWriter.writeRecords(users);
   },
   getWeddingDetails() {
     return {

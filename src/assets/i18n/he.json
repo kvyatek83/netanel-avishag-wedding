@@ -12,11 +12,12 @@
   },
   "dbControl": {
     "loadTable": "טעינת אורחים",
-    "downloadRemote": "הורדת רשימה",
+    "downloadList": "הורדת אורחים",
+    "downloadRemote": "הורדת אחסון",
     "saveToRemote": "שמירת שינויים",
     "newGuest": "הוספת אורח/ת",
     "sendMessage": "שליחת הודעה",
-    "replaceRemote": "החלפת רשימה"
+    "replaceRemote": "החלפת אחסון"
   },
   "columns": {
     "confirmation": "מגיע",
@@ -107,9 +108,10 @@
       "useraUthorized": "{{user}} לא מאושר כניסה",
       "missingGuestId": "קישור לא תקין - מזהה אורח חסר",
       "wrongGuestId": "מזהה אורח <{{user}}> לא תקין",
-      "emptyGuestList": "רשימה ריקה",
+      "sentEmptyGuestList": "נשלחה רשימה ריקה",
+      "recivedEmptyGuestList": "התקבלה רשימה ריקה, באפשרותך למלא אותה",
       "fileFormat": "קובץ לא חוקי. נא לבחור רק קובץ CSV או JSON.",
-      
+      "loginAgain": "בבקשה להתחבר מחדש",
       "general": "שגיאה לא מוכרת"
     },
     "warning": {

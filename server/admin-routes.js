@@ -92,7 +92,7 @@ router.post(
   checkRole("admin"),
   async (req, res) => {
     if (!req.body.users || req.body.users.length === 0) {
-      return res.status(400).send({ message: `emptyGuestList` });
+      return res.status(400).send({ message: `sentEmptyGuestList` });
     }
 
     db.overrideUsersInCSV(req.body.users);
@@ -108,7 +108,7 @@ router.post(
   checkRole("admin"),
   async (req, res) => {
     if (!req.body.users || req.body.users.length === 0) {
-      return res.status(400).send({ message: `emptyGuestList` });
+      return res.status(400).send({ message: `sentEmptyGuestList` });
     }
 
     await db.updateUsers(req.body.users);

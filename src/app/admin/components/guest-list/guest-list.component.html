@@ -2,7 +2,7 @@
   <!-- Filter -->
   <div class="container">
     <div class="admin-actions" *transloco="let t">
-      <div class="filter-guests" [class.rtl]="isRtl">
+      <div class="filter-guests" [class.rtl]="isRtl" *ngIf="dataSource">
         <mat-form-field >
           <mat-label>{{ t("filter.filterType") }}</mat-label>
           <mat-select [formControl]="filterType" >
@@ -37,6 +37,9 @@
         <button mat-raised-button color="primary" (click)="openUploadFile()">
           {{ t("dbControl.loadTable") }}
         </button>
+        <button mat-raised-button color="primary" (click)="downloadList()">
+          {{ t("dbControl.downloadList") }}
+        </button>
         <button mat-raised-button color="primary" (click)="downloadDb()">
           {{ t("dbControl.downloadRemote") }}
         </button>
@@ -46,17 +49,17 @@
         <button mat-raised-button color="primary" (click)="addNewGuest()">
           {{ t("dbControl.newGuest") }}
         </button>
-        <button mat-raised-button color="primary" [disabled]="this.selection.selected.length === 0" (click)="sendMessage()">
+        <button mat-raised-button color="primary" *ngIf="dataSource" [disabled]="this.selection.selected.length === 0" (click)="sendMessage()">
           {{ t("dbControl.sendMessage") }}
         </button>
-        <button mat-raised-button color="primary" [disabled]="noLocalChangesMade()" (click)="saveListToDB()">
+        <button mat-raised-button color="primary" *ngIf="dataSource" [disabled]="noLocalChangesMade() || editIsOn" (click)="saveListToDB()">
           {{ t("dbControl.saveToRemote") }}
         </button>
       </div>
     </div>
 
     <!-- Define table -->
-    <div class="guest-list">
+    <div class="guest-list" *ngIf="dataSource">
       <ng-container *transloco="let t; read: 'columns'">
         <table mat-table [dataSource]="dataSource" matSort>
           <!-- Define columns for data -->

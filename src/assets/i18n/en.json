@@ -16,7 +16,8 @@
   },
   "dbControl": {
     "loadTable": "Load guest to list",
-    "downloadRemote": "Download list",
+    "downloadList": "Download List",
+    "downloadRemote": "Download DB",
     "saveToRemote": "Save local changes",
     "newGuest": "Add new guest",
     "sendMessage": "Send message",
@@ -111,8 +112,10 @@
       "useraUthorized": "User {{user}} is not authorized!",
       "missingGuestId": "Wedding link is broken",
       "wrongGuestId": "No user for {{user}} found",
-      "emptyGuestList": "List is empty.",
+      "sentEmptyGuestList": "List is sent empty.",
+      "recivedEmptyGuestList": "The list is emtpy, you can fill it",
       "fileFormat": "Invalid file format. Please select a CSV or JSON file.",
+      "loginAgain": "You need to login again",
       "general": "Unknownen error"
     },
     "warning": {
