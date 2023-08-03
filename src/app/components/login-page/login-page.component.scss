@@ -13,10 +13,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0;
+  opacity: 1;
   /* The transition delay should be the same as the transition delay in .center */
-  transition: all 0.3s cubic-bezier(0.445, 0.05, 0, 1) 0s;
+  // transition: all 0.3s cubic-bezier(0.445, 0.05, 0, 1) 0s;
   z-index: -1;
+}
+
+@media only screen and (min-width: 600px) {
+  .photo {
+    opacity: 0;
+    /* Make sure the delay is greater than the one in .container:hover .center */
+    transition: all 0.3s cubic-bezier(0.445, 0.05, 0, 1) 0s;
+  }
 }
 
 .container {
@@ -42,10 +50,12 @@
       transition-delay: 0.3s;
     }
 
-    .photo {
-      opacity: 1;
-      /* Make sure the delay is greater than the one in .container:hover .center */
-      transition-delay: 0.3s;
+    @media only screen and (min-width: 600px) {
+      .photo {
+        opacity: 1;
+        /* Make sure the delay is greater than the one in .container:hover .center */
+        transition-delay: 0.3s;
+      }
     }
   }
 }
@@ -115,6 +125,12 @@
     flex-direction: column;
     width: 100%;
     align-items: center;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .login-form {
+      width: 215px;
+    }
   }
 
   input {

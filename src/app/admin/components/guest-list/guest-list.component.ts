@@ -33,6 +33,7 @@ import { NewGuestComponent } from '../new-guest/new-guest.component';
 import { SendMessageComponent } from '../send-message/send-message.component';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { TranslocoService } from '@ngneat/transloco';
+import { PlatformService } from 'src/app/services/platform.sevice';
 
 export function PhoneValidator(
   control: AbstractControl
@@ -68,6 +69,7 @@ export class GuestListComponent implements OnDestroy {
   originalGuestsState: WeddingGuest[] = [];
 
   isRtl = false;
+  isMobile = false;
   isLoading = true;
 
   guestFormControls: FormGroup = this.fb.group({});
@@ -89,11 +91,17 @@ export class GuestListComponent implements OnDestroy {
     private languageService: LanguageService,
     private notificationsService: NotificationsService,
     private translocoService: TranslocoService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private platformService: PlatformService
   ) {
     this.languageService.rtl$
       .pipe(takeUntil(this.destroy$))
       .subscribe((rtl) => (this.isRtl = rtl));
+
+      this.platformService.isMobile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((mobile) => (this.isMobile = mobile));
+
     this.adminService
       .getAllGuests()
       .pipe(
@@ -400,6 +408,7 @@ export class GuestListComponent implements OnDestroy {
         })
       )
       .subscribe((newGuestList: WeddingGuest[]) => {
+        this.originalGuestsState = JSON.parse(JSON.stringify(newGuestList));
         this.initGuestsTable(newGuestList);
       });
   }

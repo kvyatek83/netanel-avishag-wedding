@@ -28,7 +28,7 @@ export class GuestFieldComponent implements OnChanges {
           : this.externalFormControl?.value.startsWith('+972') ||
             this.externalFormControl?.value.startsWith('05')
           ? 'phone' 
-          : !isNaN(this.externalFormControl?.value)
+          : this.externalFormControl?.value && !isNaN(this.externalFormControl?.value)
           ? 'number'
           : 'string';
     }

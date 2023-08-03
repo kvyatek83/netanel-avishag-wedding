@@ -44,6 +44,7 @@ export function NumberValidator(
   styleUrls: ['./guest.component.scss'],
 })
 export class GuestComponent implements OnInit, OnDestroy {
+  private readonly MAX_GUESTS = 10
   isRtl = false;
   isLoading = false;
   guest: GuestDetails | undefined;
@@ -55,7 +56,7 @@ export class GuestComponent implements OnInit, OnDestroy {
     transport: [false],
   });
 
-  readonly numbers = Array.from({ length: 10 }, (_, i) => i + 1);
+  numbers = Array.from({ length: this.MAX_GUESTS }, (_, i) => i + 1);
 
   private userUuid: string | null | undefined;
   private destroy$: Subject<void> = new Subject();
@@ -186,9 +187,16 @@ export class GuestComponent implements OnInit, OnDestroy {
           if (guestDetails && wedding) {
             this.guest = guestDetails;
             this.authService.setGuestDetails(guestDetails);
-            if (Number(guestDetails?.participants) > 0) {
+
+            const participants = Number(guestDetails?.participants);
+
+            if (participants > 0) {
+              if (participants > this.MAX_GUESTS) {
+                this.numbers = Array.from({ length: participants + this.MAX_GUESTS }, (_, i) => i + 1);
+              }
+
               this.form.setValue({
-                participants: Number(guestDetails?.participants),
+                participants: participants,
                 transport: guestDetails.transport,
               });
             }

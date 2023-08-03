@@ -1,218 +1,292 @@
-<ng-container *ngIf="!isLoading; else loading">
-  <!-- Filter -->
-  <div class="container">
-    <div class="admin-actions" *transloco="let t">
-      <div class="filter-guests" [class.rtl]="isRtl" *ngIf="dataSource">
-        <mat-form-field >
-          <mat-label>{{ t("filter.filterType") }}</mat-label>
-          <mat-select [formControl]="filterType" >
-            <mat-option
-              *ngFor="let topping of displayedColumns"
-              [value]="topping"
-              [class.mat-mdc-option-rtl]="isRtl"
-            >
-              {{ t("columns." + topping) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field *ngIf="filterType.value === 'transport' || filterType.value === 'confirmation'">
-          <mat-label>{{ t("filter.filterValue") }}</mat-label>
-          <mat-select [formControl]="filterValue">
-            <mat-option [class.mat-mdc-option-rtl]="isRtl">--</mat-option>
-            <mat-option
-              *ngFor="let bool of [true, false]"
-              [value]="bool"
-              [class.mat-mdc-option-rtl]="isRtl"
-            >
-              {{ t("booleans." + bool) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" *ngIf="filterType.value !== 'transport' && filterType.value !== 'confirmation'">
-          <mat-label>{{ t("filter.filterValue") }}</mat-label>
-          <input matInput [formControl]="filterValue" />
-        </mat-form-field>
-      </div>
-      <div class="db-control" [class.rtl]="isRtl">
-        <button mat-raised-button color="primary" (click)="openUploadFile()">
-          {{ t("dbControl.loadTable") }}
-        </button>
-        <button mat-raised-button color="primary" (click)="downloadList()">
-          {{ t("dbControl.downloadList") }}
-        </button>
-        <button mat-raised-button color="primary" (click)="downloadDb()">
-          {{ t("dbControl.downloadRemote") }}
-        </button>
-        <button mat-raised-button color="primary" (click)="uploadNewFileToDB()">
-          {{ t("dbControl.replaceRemote") }}
-        </button>
-        <button mat-raised-button color="primary" (click)="addNewGuest()">
-          {{ t("dbControl.newGuest") }}
-        </button>
-        <button mat-raised-button color="primary" *ngIf="dataSource" [disabled]="this.selection.selected.length === 0" (click)="sendMessage()">
-          {{ t("dbControl.sendMessage") }}
-        </button>
-        <button mat-raised-button color="primary" *ngIf="dataSource" [disabled]="noLocalChangesMade() || editIsOn" (click)="saveListToDB()">
-          {{ t("dbControl.saveToRemote") }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Define table -->
-    <div class="guest-list" *ngIf="dataSource">
-      <ng-container *transloco="let t; read: 'columns'">
-        <table mat-table [dataSource]="dataSource" matSort>
-          <!-- Define columns for data -->
-          <ng-container
-            *ngFor="let column of displayedColumns; let index = index"
-            [matColumnDef]="column"
-            [sticky]="index === 0"
-          >
-            <th mat-header-cell mat-sort-header *matHeaderCellDef>
-              {{ t(column) }}
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let element"
-              [ngClass]="element.deleted ? 'cell-removed' : isValueChanged(element, column) ? 'cell-changed' : ''"
-              [class.editable-row]="element.editing === true"
-            >
-            <!-- [class.cell-changed]="isValueChanged(element, column)" -->
-      
-              <app-boolean-span
-                *ngIf="element.editing !== true"
-                [spanValue]="element[column]"
-              ></app-boolean-span>
-              <app-guest-field
-                *ngIf="element.editing === true"
-                [externalFormControl]="guestFormControls.controls[column]"
-                [isRtl]="isRtl"
-                [label]="column"
-              ></app-guest-field>
-            </td>
-          </ng-container>
-          <!-- Separate column for Edit button -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>{{ t("actions") }}</th>
-            <ng-container *transloco="let t; read: 'actionsBtns'">
-              <td mat-cell *matCellDef="let element">
-                <ng-container *ngIf="element.editing === true">
-                  <button
-                    mat-button
-                    (click)="editRow(element, true)"
-                    [matTooltip]="t('save')"
-                    [disabled]="guestFormControls && guestFormControls.invalid"
-                  >
-                    <mat-icon class="actions-icons__edit">done_outline</mat-icon>
-                  </button>
-                  <button
-                    mat-button
-                    (click)="editRow(element, false)"
-                    [matTooltip]="t('cancel')"
-                  >
-                    <mat-icon class="actions-icons__edit">close_outline</mat-icon>
-                  </button>
-                </ng-container>
-                <ng-container *ngIf="element.editing !== true">
-                  <button
-                    mat-button
-                    [disabled]="editIsOn"
-                    (click)="revertChanges(element)"
-                    [matTooltip]="t('revert')"
-                  >
-                    <mat-icon class="actions-icons__edit"
-                      >refresh_outline</mat-icon
-                    >
-                  </button>
-                  <button
-                    mat-button
-                    [disabled]="editIsOn"
-                    (click)="startEditGuestDetails(element)"
-                    [matTooltip]="t('edit')"
-                  >
-                    <mat-icon class="actions-icons__edit">edit_outline</mat-icon>
-                  </button>
-                  <button
-                    mat-button
-                    [disabled]="editIsOn || element.deleted"
-                    (click)="removeGuestFromList(element)"
-                    [matTooltip]="t('delete')"
-                  >
-                    <mat-icon class="actions-icons__edit">delete_outline</mat-icon>
-                  </button>
-                </ng-container>
-              </td>
-            </ng-container>
-          </ng-container>
-          <!-- Checkbox Column -->
-          <ng-container matColumnDef="select">
-            <th mat-header-cell *matHeaderCellDef class="selection">
-              <mat-checkbox
-                (change)="$event ? toggleAllRows() : null"
-                [checked]="selection.hasValue() && isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()"
+<div class="admin-page">
+  <ng-container *ngIf="!isLoading; else loading">
+    <!-- Filter -->
+    <div class="container">
+      <div class="admin-actions" *transloco="let t">
+        <div class="filter-guests" [class.rtl]="isRtl" *ngIf="dataSource">
+          <mat-form-field>
+            <mat-label>{{ t("filter.filterType") }}</mat-label>
+            <mat-select [formControl]="filterType">
+              <mat-option
+                *ngFor="let topping of displayedColumns"
+                [value]="topping"
+                [class.mat-mdc-option-rtl]="isRtl"
               >
-              </mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                (click)="$event.stopPropagation()"
-                (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)"
-              >
-              </mat-checkbox>
-            </td>
-          </ng-container>
-          <!-- Define headers -->
-          <tr
-            mat-header-row
-            *matHeaderRowDef="displayedColumns.concat(['actions', 'select'])"
-          ></tr>
-          <tr
-            mat-row
-            *matRowDef="
-              let row;
-              columns: displayedColumns.concat(['actions', 'select'])
+                {{ t("columns." + topping) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            *ngIf="
+              filterType.value === 'transport' ||
+              filterType.value === 'confirmation'
             "
-          ></tr>
-          <!-- Footer columns -->
-          <ng-container *transloco="let t; read: 'guestListSum'">
-            <ng-container matColumnDef="totalConfirmation" sticky>
-              <td mat-footer-cell *matFooterCellDef colspan="1">
-                {{
-                  t("confirm", { confirm: totalConfirmation, total: totalGuests })
-                }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="totalTransport" sticky>
-              <td mat-footer-cell *matFooterCellDef colspan="1">
-                {{ t("transport", { value: totalTransport }) }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="totalParticipants" sticky>
-              <td mat-footer-cell *matFooterCellDef colspan="1">
-                {{ t("participants", { value: totalParticipants }) }}
-              </td>
-            </ng-container>
-            <tr
-              mat-footer-row
-              *matFooterRowDef="[
-                'totalConfirmation',
-                'totalTransport',
-                'totalParticipants'
-              ]"
-            ></tr>
-          </ng-container>
-        </table>
-      </ng-container>
-      <!-- Define paginator -->
-      <mat-paginator
-        [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
-        aria-label="Select page of users"
-      ></mat-paginator>
-    </div>
-  </div>
-</ng-container>
+          >
+            <mat-label>{{ t("filter.filterValue") }}</mat-label>
+            <mat-select [formControl]="filterValue">
+              <mat-option [class.mat-mdc-option-rtl]="isRtl">--</mat-option>
+              <mat-option
+                *ngFor="let bool of [true, false]"
+                [value]="bool"
+                [class.mat-mdc-option-rtl]="isRtl"
+              >
+                {{ t("booleans." + bool) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            *ngIf="
+              filterType.value !== 'transport' &&
+              filterType.value !== 'confirmation'
+            "
+          >
+            <mat-label>{{ t("filter.filterValue") }}</mat-label>
+            <input matInput [formControl]="filterValue" />
+          </mat-form-field>
+        </div>
+        <div class="db-control" [class.rtl]="isRtl">
+          <button mat-raised-button color="primary" (click)="openUploadFile()">
+            {{ t("dbControl.loadTable") }}
+          </button>
+          <button mat-raised-button color="primary" (click)="downloadList()">
+            {{ t("dbControl.downloadList") }}
+          </button>
+          <button mat-raised-button color="primary" (click)="downloadDb()">
+            {{ t("dbControl.downloadRemote") }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="uploadNewFileToDB()"
+          >
+            {{ t("dbControl.replaceRemote") }}
+          </button>
+          <button mat-raised-button color="primary" (click)="addNewGuest()">
+            {{ t("dbControl.newGuest") }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            *ngIf="dataSource"
+            [disabled]="this.selection.selected.length === 0"
+            (click)="sendMessage()"
+          >
+            {{ t("dbControl.sendMessage") }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            *ngIf="dataSource"
+            [disabled]="noLocalChangesMade() || editIsOn"
+            (click)="saveListToDB()"
+          >
+            {{ t("dbControl.saveToRemote") }}
+          </button>
+        </div>
+      </div>
 
-<!-- Make loading spinners -->
-<ng-template #loading> Loading... </ng-template>
+      <!-- Define table -->
+      <div class="guest-list" *ngIf="dataSource">
+        <ng-container *transloco="let t; read: 'columns'">
+          <table mat-table [dataSource]="dataSource" matSort>
+            <!-- Define columns for data -->
+            <ng-container
+              *ngFor="let column of displayedColumns; let index = index"
+              [matColumnDef]="column"
+              [sticky]="index === 0"
+            >
+              <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                {{ t(column) }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                [ngClass]="
+                  element.deleted
+                    ? 'cell-removed'
+                    : isValueChanged(element, column)
+                    ? 'cell-changed'
+                    : ''
+                "
+                [class.editable-row]="element.editing === true"
+              >
+                <!-- [class.cell-changed]="isValueChanged(element, column)" -->
+
+                <app-boolean-span
+                  *ngIf="element.editing !== true"
+                  [spanValue]="element[column]"
+                ></app-boolean-span>
+                <app-guest-field
+                  *ngIf="element.editing === true"
+                  [externalFormControl]="guestFormControls.controls[column]"
+                  [isRtl]="isRtl"
+                  [label]="column"
+                ></app-guest-field>
+              </td>
+            </ng-container>
+            <!-- Separate column for Edit button -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>{{ t("actions") }}</th>
+              <ng-container *transloco="let t; read: 'actionsBtns'">
+                <td mat-cell *matCellDef="let element">
+                  <ng-container *ngIf="element.editing === true">
+                    <button
+                      mat-button
+                      (click)="editRow(element, true)"
+                      [matTooltip]="t('save')"
+                      [disabled]="
+                        guestFormControls && guestFormControls.invalid
+                      "
+                    >
+                      <mat-icon class="actions-icons__save"
+                        >done_outline</mat-icon
+                      >
+                    </button>
+                    <button
+                      mat-button
+                      (click)="editRow(element, false)"
+                      [matTooltip]="t('cancel')"
+                    >
+                      <mat-icon class="actions-icons__cancel"
+                        >close_outline</mat-icon
+                      >
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="element.editing !== true">
+                    <button
+                      mat-button
+                      [disabled]="editIsOn"
+                      (click)="revertChanges(element)"
+                      [matTooltip]="t('revert')"
+                    >
+                      <mat-icon class="actions-icons__revert"
+                        >refresh_outline</mat-icon
+                      >
+                    </button>
+                    <button
+                      mat-button
+                      [disabled]="editIsOn"
+                      (click)="startEditGuestDetails(element)"
+                      [matTooltip]="t('edit')"
+                    >
+                      <mat-icon class="actions-icons__edit"
+                        >edit_outline</mat-icon
+                      >
+                    </button>
+                    <button
+                      mat-button
+                      [disabled]="editIsOn || element.deleted"
+                      (click)="removeGuestFromList(element)"
+                      [matTooltip]="t('delete')"
+                    >
+                      <mat-icon class="actions-icons__delete"
+                        >delete_outline</mat-icon
+                      >
+                    </button>
+                  </ng-container>
+                </td>
+              </ng-container>
+            </ng-container>
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="selection">
+                <mat-checkbox
+                  (change)="$event ? toggleAllRows() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                >
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(row) : null"
+                  [checked]="selection.isSelected(row)"
+                >
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            <!-- Define headers -->
+            <tr
+              mat-header-row
+              *matHeaderRowDef="
+                displayedColumns.concat(['actions', 'select']);
+                sticky: !isMobile
+              "
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="
+                let row;
+                columns: displayedColumns.concat(['actions', 'select'])
+              "
+            ></tr>
+            <!-- Footer columns -->
+            <ng-container *ngIf="isMobile">
+              <ng-container *transloco="let t; read: 'guestListSum'">
+                <ng-container matColumnDef="totalConfirmation" sticky>
+                  <td mat-footer-cell *matFooterCellDef colspan="1">
+                    {{
+                      t("confirm", {
+                        confirm: totalConfirmation,
+                        total: totalGuests
+                      })
+                    }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="totalTransport" sticky>
+                  <td mat-footer-cell *matFooterCellDef colspan="1">
+                    {{ t("transport", { value: totalTransport }) }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="totalParticipants" sticky>
+                  <td mat-footer-cell *matFooterCellDef colspan="1">
+                    {{ t("participants", { value: totalParticipants }) }}
+                  </td>
+                </ng-container>
+                <tr
+                  mat-footer-row
+                  *matFooterRowDef="[
+                    'totalConfirmation',
+                    'totalTransport',
+                    'totalParticipants'
+                  ]"
+                ></tr>
+              </ng-container>
+            </ng-container>
+          </table>
+        </ng-container>
+        <!-- Define paginator -->
+        <div class="mat-paginator-sticky">
+          <mat-toolbar *ngIf="!isMobile; else mobilePaginator">
+            <mat-toolbar-row *transloco="let t; read: 'guestListSum'">
+              <div class="guests-info">
+                <span class="guests-info-summary">{{
+                  t("confirm", { confirm: totalConfirmation, total: totalGuests })
+                }}</span>
+                <span class="guests-info-summary">{{ t("transport", { value: totalTransport }) }}</span>
+                <span class="guests-info-summary">{{ t("participants", { value: totalParticipants }) }}</span>
+              </div>
+              <span class="spacer"></span>
+              <mat-paginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
+                aria-label="Select page of users"
+              ></mat-paginator>
+            </mat-toolbar-row>
+          </mat-toolbar>
+
+          <ng-template #mobilePaginator>
+            <mat-paginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
+                aria-label="Select page of users"
+              ></mat-paginator>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Make loading spinners -->
+  <ng-template #loading> Loading... </ng-template>
+</div>
