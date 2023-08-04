@@ -158,7 +158,7 @@ router.post(
         body: `${messages[0].message}`,
         from: 'whatsapp:+14155238886',
         to: 'whatsapp:+972524281897',
-        mediaUrl: 'http://localhost:3322/assets/wedding-invitation.png'
+        mediaUrl: process.env.WEDDING_INVITATION_IMAGE
     })
     .then(message => console.log(message.sid));
     } catch (error) {
