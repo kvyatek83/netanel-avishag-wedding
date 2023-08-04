@@ -7,6 +7,9 @@ const db = require("./database-utils");
 
 const fs = require("fs");
 
+const twilio = require('twilio');
+const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
 router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {
   res.status(200).send("Admin action");
 });
@@ -147,8 +150,29 @@ router.post(
     // req.body.invitation
 
     // return better notification
+    try {
+      console.log(process.env.TWILIO_PHONE_NUMBER);
+
+      client.messages
+    .create({
+        body: `${messages[0].message}`,
+        from: 'whatsapp:+14155238886',
+        to: 'whatsapp:+972524281897',
+        mediaUrl: 'http://localhost:3322/assets/wedding-invitation.png'
+    })
+    .then(message => console.log(message.sid));
+    } catch (error) {
+      console.log("Failed to send WhatsApp message: ", error);
+      throw error;
+    }
+
     res.status(200).send({ messages: messages });
   }
 );
-
+// https://avishag-netanel-wedding.com/assets/wedding-invitation.png
 module.exports = router;
+
+// TWILIO send message
+// async function sendWhatsAppMessage(toPhoneNumber, message) {
+
+// }
