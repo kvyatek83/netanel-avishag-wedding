@@ -142,37 +142,53 @@ router.post(
         user.hebrewname,
         guestInvite
       );
-
+      utils.parseLeadingZerosPhoneToPrefixPhone(user)
       messages.push({ id: user.id, phone: user.phone, message: message });
     });
 
-    // call twilio
-    // req.body.invitation
 
-    // return better notification
-    try {
-      console.log(process.env.TWILIO_PHONE_NUMBER);
+    messages.forEach(message => {
+      const whatsappTemplate = {
+        body: `${message.message}`,
+        from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
+        to: `whatsapp:${message.phone}`
+      };
 
-      client.messages
-    .create({
-        body: `${messages[0].message}`,
-        from: 'whatsapp:+14155238886',
-        to: 'whatsapp:+972524281897',
-        mediaUrl: process.env.WEDDING_INVITATION_IMAGE
+      if (req.body.invitation) {
+        whatsappTemplate['mediaUrl'] = process.env.WEDDING_INVITATION_IMAGE
+      }
+
+      let sent = 0;
+      let failed = 0;
+
+      try {
+        client.messages
+      .create(whatsappTemplate)
+      .then(message => {
+        console.log(message.sid);
+        sent += 1;
+      })
+      .catch(error => {
+        console.log(error);
+        failed += 1;
+      });
+      } catch (error) {
+        console.log("Failed to send WhatsApp message: ", error);
+        throw error;
+      }
     })
-    .then(message => console.log(message.sid));
-    } catch (error) {
-      console.log("Failed to send WhatsApp message: ", error);
-      throw error;
-    }
 
-    res.status(200).send({ messages: messages });
+    if (failed === 0) {
+      console.log('All messges sent');
+      return res.status(200).send({ status: 'SUCCESS', messages: 'allMessageSent' });
+    } else if (sent === 0) {
+      console.log('All messges failed');
+      return res.status(200).send({ status: 'ERROR', messages: 'allMessageFailed' });
+    } else {
+      console.log(`${sent} messages sent, ${failed} messages failed`);
+
+      return res.status(200).send({ status: 'INFO', messages: 'messagesStatus', params: { sent, failed} });
+    }
   }
 );
-// https://avishag-netanel-wedding.com/assets/wedding-invitation.png
 module.exports = router;
-
-// TWILIO send message
-// async function sendWhatsAppMessage(toPhoneNumber, message) {
-
-// }

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, take } from 'rxjs';
+import { NotificationType } from '../services/notifications.service';
 
 export interface WeddingGuest {
   confirmation: boolean;
@@ -16,6 +17,12 @@ export interface WeddingGuest {
   deleted?: boolean;
 }
 
+export interface MessagesRes {
+  status: NotificationType;
+  messages: string;
+  params: { sent: number; failed: number };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -29,22 +36,40 @@ export class AdminService {
   }
 
   downloadDb(): Observable<Blob> {
-    return this.http.get<Blob>('/api/admin/download-db', {responseType: 'blob' as 'json'}).pipe(take(1));
+    return this.http
+      .get<Blob>('/api/admin/download-db', { responseType: 'blob' as 'json' })
+      .pipe(take(1));
   }
 
   downloadGuestList(): Observable<Blob> {
-    return this.http.get<Blob>('/api/admin/download', {responseType: 'blob' as 'json'}).pipe(take(1));
+    return this.http
+      .get<Blob>('/api/admin/download', { responseType: 'blob' as 'json' })
+      .pipe(take(1));
   }
 
   replaceDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
-    return this.http.post<WeddingGuest[]>('/api/admin/replace-db', {users: guests}).pipe(take(1));
+    return this.http
+      .post<WeddingGuest[]>('/api/admin/replace-db', { users: guests })
+      .pipe(take(1));
   }
 
   saveChangesToDB(guests: WeddingGuest[]): Observable<WeddingGuest[]> {
-    return this.http.post<WeddingGuest[]>('/api/admin/save-changes-to-db', {users: guests}).pipe(take(1));
+    return this.http
+      .post<WeddingGuest[]>('/api/admin/save-changes-to-db', { users: guests })
+      .pipe(take(1));
   }
 
-  sendMessage(message: string, invitation: boolean, users: WeddingGuest[]): Observable<{message: string}> {
-    return this.http.post<{message: string}>('/api/admin/send-message', {message, invitation, users}).pipe(take(1));
+  sendMessage(
+    message: string,
+    invitation: boolean,
+    users: WeddingGuest[]
+  ): Observable<MessagesRes> {
+    return this.http
+      .post<MessagesRes>('/api/admin/send-message', {
+        message,
+        invitation,
+        users,
+      })
+      .pipe(take(1));
   }
 }

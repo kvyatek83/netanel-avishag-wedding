@@ -116,17 +116,20 @@
       "recivedEmptyGuestList": "The list is emtpy, you can fill it",
       "fileFormat": "Invalid file format. Please select a CSV or JSON file.",
       "loginAgain": "You need to login again",
+      "allMessageFailed": "All messages failed",
       "general": "Unknownen error"
     },
     "warning": {
       "superAdmin": "This actions is risky, please be careful!"
     },
     "info": {
-      "convertComplete": "File format is good and almost ready"
+      "convertComplete": "File format is good and almost ready",
+      "messagesStatus": "{{sent}} messages sent, {{}} mesages failed."
     },
     "success": {
       "saveTheDate": "You submit saved!",
-      "file": "The file was successfully download"
+      "file": "The file was successfully download",
+      "allMessageSent": "All messages sent"
     }
   }
 }

@@ -112,17 +112,20 @@
       "recivedEmptyGuestList": "התקבלה רשימה ריקה, באפשרותך למלא אותה",
       "fileFormat": "קובץ לא חוקי. נא לבחור רק קובץ CSV או JSON.",
       "loginAgain": "בבקשה להתחבר מחדש",
+      "allMessageFailed": "כל ההודעות נכשלו",
       "general": "שגיאה לא מוכרת"
     },
     "warning": {
       "superAdmin": "הפעולה הבאה מסוכנת, לפעול בזהירות!"
     },
     "info": {
-      "convertComplete": "הקובץ מתאים וכמעט סיים לטעון"
+      "convertComplete": "הקובץ מתאים וכמעט סיים לטעון",
+      "messagesStatus": "{{sent}} הודעות נשלחו, {{}} הודעות נכשלו."
     },
     "success": {
       "saveTheDate": "הבחירה שלך נשמרה!",
-      "file": "הקובץ ירד בהצלחה"
+      "file": "הקובץ ירד בהצלחה",
+      "allMessageSent": "כל ההודעות נשלחו"
     }
   }
 }

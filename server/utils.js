@@ -26,7 +26,6 @@ module.exports = {
             const israelPrefix = '+972';
             const prefixPhone = `${israelPrefix}${Number(user.phone)}`;
             user.phone = prefixPhone;
-            user.phone = prefixPhone;
         }
     },
 

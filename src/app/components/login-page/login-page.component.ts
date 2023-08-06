@@ -29,7 +29,7 @@ import {
     trigger('fade', [
       state('visible', style({ opacity: 1 })),
       state('hidden', style({ opacity: 0 })),
-      transition('visible <=> hidden', animate('1s ease-in-out')),
+      transition('visible <=> hidden', animate('0.5s ease-in-out')),
     ]),
   ],
 })
@@ -43,6 +43,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   signInForm: FormGroup;
   loading = false;
   isRtl = false;
+  isMobile = false;
   backgroundImage: string | undefined;
 
   private destroy$: Subject<void> = new Subject();
@@ -68,6 +69,10 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.platformService.isMobile$.pipe(takeUntil(this.destroy$)).subscribe(mobile => this.isMobile = mobile);
+    }, 500)
+
     this.platformService.breakpoint$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -94,7 +99,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
               setTimeout(() => {
                 this.fade$.next(false);
                 this.backgroundImage = `${this.BASE_PATH}/${this.MOBILE_BG}-${imageNumber}.png`;
-              }, 1000);
+              }, 500);
             });
         }
       });

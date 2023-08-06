@@ -1,5 +1,5 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { AdminService, WeddingGuest } from '../../admin.service';
+import { AdminService, MessagesRes, WeddingGuest } from '../../admin.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -34,6 +34,7 @@ import { SendMessageComponent } from '../send-message/send-message.component';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { TranslocoService } from '@ngneat/transloco';
 import { PlatformService } from 'src/app/services/platform.sevice';
+import { NotificationType } from '../../../services/notifications.service';
 
 export function PhoneValidator(
   control: AbstractControl
@@ -98,7 +99,7 @@ export class GuestListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((rtl) => (this.isRtl = rtl));
 
-      this.platformService.isMobile$
+    this.platformService.isMobile$
       .pipe(takeUntil(this.destroy$))
       .subscribe((mobile) => (this.isMobile = mobile));
 
@@ -256,7 +257,9 @@ export class GuestListComponent implements OnDestroy {
     const dialogRef = this.dialog.open(NewGuestComponent, {
       panelClass: 'dialog-responsive',
       data: {
-        users: this.dataSource?.data ? this.dataSource.data.map((guest) => guest.phone) : [],
+        users: this.dataSource?.data
+          ? this.dataSource.data.map((guest) => guest.phone)
+          : [],
       },
     });
 
@@ -270,7 +273,7 @@ export class GuestListComponent implements OnDestroy {
         if (this.dataSource) {
           this.reloadGuestListData([...this.dataSource.data, user]);
         } else {
-          this.initGuestsTable([user])
+          this.initGuestsTable([user]);
         }
       });
   }
@@ -309,10 +312,10 @@ export class GuestListComponent implements OnDestroy {
               cloneGuestList = [...cloneGuestList, user];
             }
           });
-  
+
           this.reloadGuestListData(cloneGuestList);
         } else {
-          users.forEach(user => user.id = v4());
+          users.forEach((user) => (user.id = v4()));
           this.initGuestsTable(users);
         }
       });
@@ -339,34 +342,64 @@ export class GuestListComponent implements OnDestroy {
           );
         })
       )
-      .subscribe((a: any) => {
+      .subscribe((res: MessagesRes) => {
+        this.messagesStatusNotification(res);
         this.selection.clear();
+      });
+  }
+
+  private messagesStatusNotification(res: MessagesRes): void {
+    switch (res.status) {
+      case 'SUCCESS':
+        this.notificationsService.setNotification({
+          type: 'SUCCESS',
+          message: this.translocoService.translate(
+            `notifications.errors.${res.messages}`
+          ),
+        });
+        break;
+      case 'INFO':
         this.notificationsService.setNotification({
           type: 'INFO',
-          message: a.messages[0],
+          message: this.translocoService.translate(
+            `notifications.errors.${res.messages}`,
+            { sent: res.params.sent, failed: res.params.failed }
+          ),
         });
-      });
+        break;
+      case 'ERROR':
+        this.notificationsService.setNotification({
+          type: 'ERROR',
+          message: this.translocoService.translate(
+            `notifications.errors.${res.messages}`
+          ),
+        });
+        break;
+
+      default:
+        break;
+    }
   }
 
   downloadList(): void {
     this.adminService
-    .downloadGuestList()
-    .pipe(
-      catchError((error) => {
-        this.notificationsService.setNotification({
-          type: 'ERROR',
-          message: this.translocoService.translate(
-            'notifications.errors.general'
-          ),
-        });
-        return of(null);
-      })
-    )
-    .subscribe((file: Blob | null) => {
-      if (file) {
-        this.downloadFile(file);
-      }
-    });
+      .downloadGuestList()
+      .pipe(
+        catchError((error) => {
+          this.notificationsService.setNotification({
+            type: 'ERROR',
+            message: this.translocoService.translate(
+              'notifications.errors.general'
+            ),
+          });
+          return of(null);
+        })
+      )
+      .subscribe((file: Blob | null) => {
+        if (file) {
+          this.downloadFile(file);
+        }
+      });
   }
 
   downloadDb(): void {
@@ -531,9 +564,7 @@ export class GuestListComponent implements OnDestroy {
     link.click();
     this.notificationsService.setNotification({
       type: 'SUCCESS',
-      message: this.translocoService.translate(
-        'notifications.success.file'
-      ),
+      message: this.translocoService.translate('notifications.success.file'),
     });
   }
 
