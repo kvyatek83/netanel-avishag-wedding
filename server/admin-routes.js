@@ -146,6 +146,8 @@ router.post(
       messages.push({ id: user.id, phone: user.phone, message: message });
     });
 
+    let sent = 0;
+    let failed = 0;
 
     messages.forEach(message => {
       const whatsappTemplate = {
@@ -158,8 +160,7 @@ router.post(
         whatsappTemplate['mediaUrl'] = process.env.WEDDING_INVITATION_IMAGE
       }
 
-      let sent = 0;
-      let failed = 0;
+      
 
       try {
         client.messages
