@@ -57,7 +57,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_ARGS='--no-sandbox'
 
 RUN npm run build
-RUN npm run start
 
 # Start the service
-# CMD [ "node", "your-app-start-file.js" ]
+CMD [ "node", "createUsersTable.js && node createAdmin.js && node app.js" ]
