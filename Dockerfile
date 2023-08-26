@@ -51,6 +51,11 @@ RUN npm install
 # Copy full application to container
 COPY . .
 
+# Set environment variable to disable Chromium's sandbox (this is required if you are running as root)
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_ARGS='--no-sandbox'
+
 RUN npm run build
 RUN npm run start
 
