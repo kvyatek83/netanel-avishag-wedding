@@ -63,7 +63,7 @@
               type="submit"
               [disabled]="!form.valid"
             >
-              {{ t("submit") }}
+              {{ changesMade ? t("update") : !guest.confirmation ? t("yes") : t('no') }}
             </button>
           </div>
         </form>

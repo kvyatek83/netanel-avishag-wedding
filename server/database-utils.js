@@ -121,6 +121,11 @@ module.exports = {
       throw new Error("NOT_FOUND");
     }
 
+    if (!confirmation) {
+      transport = false;
+      participants = 0;
+    }
+    
     users[userIndex].confirmation = confirmation;
     users[userIndex].transport = transport;
     users[userIndex].participants = participants;
@@ -129,6 +134,7 @@ module.exports = {
       path: csvFile,
       header: [
         { id: "id", title: "id" },
+        { id: "hebrewname", title: "hebrewname" },
         { id: "username", title: "username" },
         { id: "password", title: "password" },
         { id: "role", title: "role" },
@@ -141,6 +147,7 @@ module.exports = {
     });
 
     await csvWriter.writeRecords(users);
+    return users[userIndex];
   },
   getWeddingDetails() {
     return {

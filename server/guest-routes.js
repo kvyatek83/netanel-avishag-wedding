@@ -55,13 +55,13 @@ router.post("/guest/:id/save-the-date", async (req, res) => {
   }
 
   try {
-    await db.updateUserStatus(
+    const updatedUser = await db.updateUserStatus(
       req.body.id,
       req.body.confirmation,
       req.body.transport,
       req.body.participants
     );
-    res.status(200).send({ message: `saveTheDate` });
+    res.status(201).send({ user: updatedUser, message: `saveTheDate` });
   } catch ({ name, message }) {
 
     console.error(message);

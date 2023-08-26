@@ -8,7 +8,15 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { Subject, catchError, combineLatest, of, take, takeUntil } from 'rxjs';
+import {
+  Subject,
+  catchError,
+  combineLatest,
+  of,
+  startWith,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { AuthService, GuestDetails } from 'src/app/services/auth.service';
 import { LanguageService } from 'src/app/services/lang.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
@@ -24,6 +32,11 @@ interface WeddingDetails {
   weddingDuration: number;
   weddingDetails: string;
   weddingLocation: string;
+}
+
+interface GuestAnswer {
+  user: GuestDetails;
+  message: string;
 }
 
 export function NumberValidator(
@@ -44,12 +57,13 @@ export function NumberValidator(
   styleUrls: ['./guest.component.scss'],
 })
 export class GuestComponent implements OnInit, OnDestroy {
-  private readonly MAX_GUESTS = 10
+  private readonly MAX_GUESTS = 10;
   isRtl = false;
   isLoading = false;
   guest: GuestDetails | undefined;
   calendarLink: string | undefined;
   wazeLink: string | undefined;
+  changesMade = false;
 
   form = this.fb.group({
     participants: [0, [Validators.required, NumberValidator]],
@@ -93,41 +107,78 @@ export class GuestComponent implements OnInit, OnDestroy {
 
   guestConfirmationStatus(): void {
     if (this.form.valid) {
-      
       const body = {
         id: this.userUuid,
-        confirmation: true,
-        ...this.form.value
+        confirmation: this.changesMade ? true : !this.guest?.confirmation,
+        ...this.form.value,
       };
 
-      this.http.post<GuestDetails>(`/api/guest/${this.userUuid}/save-the-date`, body).pipe(take(1), catchError(error => {
-        if (error.status === 404) {
-          this.notificationsService.setNotification({
-            type: 'ERROR',
-            message: this.translocoService.translate(`notifications.errors.${error.error.message}`, { user: error.error.params }),
-          });
-          } else if (error.status === 401) {
-          this.notificationsService.setNotification({
-            type: 'ERROR',
-            message: this.translocoService.translate(`notifications.errors.${error.error.message}`),
-          });
-          } else {
+      this.changesMade = false;
+      this.isLoading = true;
+
+      this.http
+        .post<GuestAnswer>(`/api/guest/${this.userUuid}/save-the-date`, body)
+        .pipe(
+          take(1),
+          catchError((error) => {
+            if (error.status === 404) {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  `notifications.errors.${error.error.message}`,
+                  { user: error.error.params }
+                ),
+              });
+            } else if (error.status === 401) {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  `notifications.errors.${error.error.message}`
+                ),
+              });
+            } else {
+              this.notificationsService.setNotification({
+                type: 'ERROR',
+                message: this.translocoService.translate(
+                  'notifications.errors.general'
+                ),
+              });
+            }
+
+            console.error(error);
+            this.isLoading = false;
+            return of(null);
+          })
+        )
+        .subscribe((res) => {
+          if (res) {
             this.notificationsService.setNotification({
-              type: 'ERROR',
-              message: this.translocoService.translate('notifications.errors.general'),
+              type: 'SUCCESS',
+              message: this.translocoService.translate(
+                `notifications.success.${res.message}`
+              ),
             });
+
+            this.guest = res?.user;
+            const participants = Number(this.guest?.participants);
+
+            if (participants > 0) {
+              if (participants > this.MAX_GUESTS) {
+                this.numbers = Array.from(
+                  { length: participants + this.MAX_GUESTS },
+                  (_, i) => i + 1
+                );
+              }
+            }
+
+            this.form.setValue({
+              participants: participants,
+              transport: this.guest?.transport,
+            });
+
+            this.isLoading = false;
           }
-          
-          console.error(error);
-        return of(null)
-      })).subscribe((res: any) => {
-       if (res) {
-        this.notificationsService.setNotification({
-          type: 'SUCCESS',
-          message: this.translocoService.translate(`notifications.success.${res?.message}`),
         });
-       }
-      });
     } else {
       console.log('Form is invalid!!!');
     }
@@ -168,7 +219,7 @@ export class GuestComponent implements OnInit, OnDestroy {
               this.notificationsService.setNotification({
                 type: 'ERROR',
                 message: this.translocoService.translate(
-                  `notifications.errors.${error.error.message}`,
+                  `notifications.errors.${error.error.message}`
                 ),
               });
             } else {
@@ -192,7 +243,10 @@ export class GuestComponent implements OnInit, OnDestroy {
 
             if (participants > 0) {
               if (participants > this.MAX_GUESTS) {
-                this.numbers = Array.from({ length: participants + this.MAX_GUESTS }, (_, i) => i + 1);
+                this.numbers = Array.from(
+                  { length: participants + this.MAX_GUESTS },
+                  (_, i) => i + 1
+                );
               }
 
               this.form.setValue({
@@ -200,11 +254,28 @@ export class GuestComponent implements OnInit, OnDestroy {
                 transport: guestDetails.transport,
               });
             }
+
+            this.subscribeToGuestChanges(participants);
             this.creatWeddingDetails(wedding);
             this.isLoading = false;
           }
         });
     }
+  }
+
+  private subscribeToGuestChanges(participants: number): void {
+    this.form.valueChanges
+      .pipe(takeUntil(this.destroy$), startWith(this.form.value))
+      .subscribe((value) => {
+        if (this.guest?.confirmation) {
+          const originalStatus = {
+            participants: participants,
+            transport: this.guest?.transport,
+          };
+          this.changesMade =
+            JSON.stringify(value) !== JSON.stringify(originalStatus);
+        }
+      });
   }
 
   private creatWeddingDetails(wedding: WeddingDetails): void {

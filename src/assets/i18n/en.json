@@ -92,7 +92,9 @@
     "location": "Atura events, Mini-Israel",
     "transport": "You care aout transportion",
     "participants": "Total guests",
-    "submit": "See you there"
+    "yes": "See you there",
+    "no": "I can't make it",
+    "update": "Update my choice"
   },
   "timer": {
     "days": "Days",
@@ -127,7 +129,7 @@
       "messagesStatus": "{{sent}} messages sent, {{}} mesages failed."
     },
     "success": {
-      "saveTheDate": "You submit saved!",
+      "saveTheDate": "You submit saved, you always can change you answer",
       "file": "The file was successfully download",
       "allMessageSent": "All messages sent"
     }

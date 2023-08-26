@@ -354,7 +354,7 @@ export class GuestListComponent implements OnDestroy {
         this.notificationsService.setNotification({
           type: 'SUCCESS',
           message: this.translocoService.translate(
-            `notifications.errors.${res.messages}`
+            `notifications.success.${res.messages}`
           ),
         });
         break;
@@ -362,7 +362,7 @@ export class GuestListComponent implements OnDestroy {
         this.notificationsService.setNotification({
           type: 'INFO',
           message: this.translocoService.translate(
-            `notifications.errors.${res.messages}`,
+            `notifications.info.${res.messages}`,
             { sent: res.params.sent, failed: res.params.failed }
           ),
         });
