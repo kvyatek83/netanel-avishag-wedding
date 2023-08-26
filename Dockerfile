@@ -59,4 +59,5 @@ ENV PUPPETEER_ARGS='--no-sandbox'
 RUN npm run build
 
 # Start the service
-CMD [ "node", "createUsersTable.js && node createAdmin.js && node app.js" ]
+# CMD [ "node", "createUsersTable.js && node createAdmin.js && node app.js" ]
+CMD bash -c 'node createUsersTable.js && node createAdmin.js && node app.js'
