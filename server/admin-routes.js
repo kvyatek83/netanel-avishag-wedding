@@ -3,12 +3,12 @@ const express = require("express");
 const router = express.Router();
 const { verifyToken, checkRole } = require("./auth-service");
 const utils = require("./utils");
+const twilioUtils = require("./twilio-utils");
+const whatsappBot = require("./whatsapp-bot");
 const db = require("./database-utils");
 
 const fs = require("fs");
 
-const twilio = require('twilio');
-const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {
   res.status(200).send("Admin action");
@@ -134,7 +134,7 @@ router.post(
       return res.status(400).send({ message: "No guests to send." });
     }
 
-    messages = [];
+    usersMessages = [];
     req.body.users.forEach((user) => {
       const guestInvite = `${process.env.GUEST_LINK}/${user.id}`;
       const message = utils.buildGuestLink(
@@ -142,53 +142,81 @@ router.post(
         user.hebrewname,
         guestInvite
       );
-      utils.parseLeadingZerosPhoneToPrefixPhone(user)
-      messages.push({ id: user.id, phone: user.phone, message: message });
+      utils.parseLeadingZerosPhoneToPrefixPhone(user);
+      usersMessages.push({ id: user.id, phone: user.phone, message: message });
     });
 
     let sent = 0;
     let failed = 0;
 
-    messages.forEach(message => {
-      const whatsappTemplate = {
-        body: `${message.message}`,
-        from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
-        to: `whatsapp:${message.phone}`
-      };
-
-      if (req.body.invitation) {
-        whatsappTemplate['mediaUrl'] = process.env.WEDDING_INVITATION_IMAGE
-      }
-
-      
-
+    usersMessages.forEach(async (userMessage) => {
       try {
-        client.messages
-      .create(whatsappTemplate)
-      .then(message => {
-        console.log(message.sid);
-        sent += 1;
-      })
-      .catch(error => {
-        console.log(error);
-        failed += 1;
-      });
+        if (process.env.MESSAGE_PLATFORM === "bot") {
+          whatsappBot;
+          const messageStatus = await whatsappBot.sendWhatsAppBotMessage(
+            userMessage,
+            req.body.invitation
+          );
+          messageStatus ? (sent += 1) : (failed += 1);
+        } else {
+          const messageStatus = await twilioUtils.sendTwilioMessage(
+            userMessage,
+            req.body.invitation
+          );
+          messageStatus ? (sent += 1) : (failed += 1);
+        }
       } catch (error) {
-        console.log("Failed to send WhatsApp message: ", error);
-        throw error;
+        console.error(error);
+        failed += 1;
       }
-    })
+
+      // const whatsappTemplate = {
+      //   body: `${message.message}`,
+      //   from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
+      //   to: `whatsapp:${message.phone}`
+      // };
+
+      // if (req.body.invitation) {
+      //   whatsappTemplate['mediaUrl'] = process.env.WEDDING_INVITATION_IMAGE
+      // }
+
+      // try {
+      //   client.messages
+      // .create(whatsappTemplate)
+      // .then(message => {
+      //   console.log(message.sid);
+      //   sent += 1;
+      // })
+      // .catch(error => {
+      //   console.log(error);
+      //   failed += 1;
+      // });
+      // } catch (error) {
+      //   console.log("Failed to send WhatsApp message: ", error);
+      //   throw error;
+      // }
+    });
 
     if (failed === 0) {
-      console.log('All messges sent');
-      return res.status(200).send({ status: 'SUCCESS', messages: 'allMessageSent' });
+      console.log("All messges sent");
+      return res
+        .status(200)
+        .send({ status: "SUCCESS", messages: "allMessageSent" });
     } else if (sent === 0) {
-      console.log('All messges failed');
-      return res.status(200).send({ status: 'ERROR', messages: 'allMessageFailed' });
+      console.log("All messges failed");
+      return res
+        .status(200)
+        .send({ status: "ERROR", messages: "allMessageFailed" });
     } else {
       console.log(`${sent} messages sent, ${failed} messages failed`);
 
-      return res.status(200).send({ status: 'INFO', messages: 'messagesStatus', params: { sent, failed} });
+      return res
+        .status(200)
+        .send({
+          status: "INFO",
+          messages: "messagesStatus",
+          params: { sent, failed },
+        });
     }
   }
 );
