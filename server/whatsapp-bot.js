@@ -4,7 +4,7 @@ const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 
 
 const client = new Client({
-  puppeteer: { headless: true },
+  puppeteer: { headless: true, args: ['--no-sandbox']},
   authStrategy: new LocalAuth(),
 });
 
