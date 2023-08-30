@@ -248,12 +248,12 @@ export class GuestComponent implements OnInit, OnDestroy {
                   (_, i) => i + 1
                 );
               }
-
-              this.form.setValue({
-                participants: participants,
-                transport: guestDetails.transport,
-              });
             }
+
+            this.form.setValue({
+              participants: participants,
+              transport: guestDetails.transport,
+            });
 
             this.subscribeToGuestChanges(participants);
             this.creatWeddingDetails(wedding);

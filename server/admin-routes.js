@@ -4,7 +4,11 @@ const router = express.Router();
 const { verifyToken, checkRole } = require("./auth-service");
 const utils = require("./utils");
 const twilioUtils = require("./twilio-utils");
-const whatsappBot = require("./whatsapp-bot");
+
+if (process.env.MESSAGE_PLATFORM === "bot") {
+  const whatsappBot = require("./whatsapp-bot");
+}
+
 const db = require("./database-utils");
 
 const fs = require("fs");

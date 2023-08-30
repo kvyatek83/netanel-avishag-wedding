@@ -41,7 +41,7 @@ client.initialize();
 // 'qr' events also, if the login is not done within a specific time, the connection gets lost
 client.on("qr", (qr) => {
   // Generate and scan this code with your phone
-  console.log("QR RECEIVED", qr);
+  console.log("QR RECEIVED");
   qrcode.generate(qr, { small: true });
 });
 
@@ -49,19 +49,23 @@ client.on("ready", () => {
   console.log("WhatsApp bot client is ready!");
 });
 
-client.on("disconnected", () => {
-  console.log("Whatsapp is disconnected!");
-  client.destroy();
-  client.initialize();
-});
+client.on("disconnected", (reason) => {
+    console.log("Client was logged out", reason);
+    client.destroy();
+    // setup client with new session data, if you want to use an existing session
+    client.initialize();
+  });
 
 client.on("message", async (msg) => {
   if (msg.body) {
-    console.log(`${msg.form} send ${msg.body}`);
-    client.sendMessage(
-      msg.from,
-      "No need to send messages here, just go to the website with the provided link"
-    );
+    // maybe save guest messages to file 
+    console.log(`${msg.from} send ${msg.body}`);
+    if (msg.body !== 'חתונה') {
+        client.sendMessage(
+            msg.from,
+            "ההודעה שלך התקבלה"
+          );
+    }
   }
 });
 

@@ -98,9 +98,16 @@ module.exports = {
 
       if (userIndex !== -1) {
         if (users[userIndex].role !== "admin") {
+          if (!newUser.role) {
+            newUser.role = users[userIndex].role || 'guest';
+          }
+
           newUser.deleted
             ? users.splice(userIndex, 1)
             : (users[userIndex] = newUser);
+        } else {
+          newUser.role = users[userIndex].role;
+          users[userIndex] = newUser
         }
       } else {
         users.push(newUser);
