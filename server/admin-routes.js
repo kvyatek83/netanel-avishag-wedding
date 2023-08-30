@@ -156,7 +156,6 @@ router.post(
     usersMessages.forEach(async (userMessage) => {
       try {
         if (process.env.MESSAGE_PLATFORM === "bot") {
-          whatsappBot;
           const messageStatus = await whatsappBot.sendWhatsAppBotMessage(
             userMessage,
             req.body.invitation
