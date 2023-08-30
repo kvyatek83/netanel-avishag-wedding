@@ -4,14 +4,14 @@ const router = express.Router();
 const { verifyToken, checkRole } = require("./auth-service");
 const utils = require("./utils");
 const twilioUtils = require("./twilio-utils");
-
-if (process.env.MESSAGE_PLATFORM === "bot") {
-  const whatsappBot = require("./whatsapp-bot");
-}
-
+const whatsappBot = require("./whatsapp-bot");
 const db = require("./database-utils");
 
 const fs = require("fs");
+
+if (process.env.MESSAGE_PLATFORM === "bot") {
+  whatsappBot.initWhatsappBot();
+}
 
 
 router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {

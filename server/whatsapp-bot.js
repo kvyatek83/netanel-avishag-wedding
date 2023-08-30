@@ -2,74 +2,80 @@ require("dotenv").config();
 const qrcode = require("qrcode-terminal");
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 
-
-const client = new Client({
-  puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']},
-  authStrategy: new LocalAuth(),
-});
-
-client.on("authenticated", (session) => {
-  console.log("AUTHENTICATED", session);
-});
-
-
-// Check for uncaught exceptions and unhandled promise rejections**: These could abruptly crash your Node.js process or result in the mysterious error you're experiencing
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
-
-process.on("uncaughtException", function (err) {
-  console.log("Caught exception: " + err);
-});
-
-// Check if Puppeteer is still connected**: If the puppeteer's browser is disconnected due to any reason, you must handle this error. 
-// Below is a piece of code that will help you to debug if puppeteer is disconnected.
-client.on("disconnected", (reason) => {
-  console.log("Client was logged out", reason);
-});
-
-// Handle possible session expiration**: WhatsApp sessions can expire, causing the puppeteer to error out. 
-// You can listen for the `auth_failure` event and handle re-authentication in that case
-client.on("auth_failure", (msg) => {
-  // Fired if session restore was unsuccessfull
-  console.error("AUTHENTICATION FAILURE", msg);
-});
-
-client.initialize();
-
-// Connect/Reconnect logic**: You might need to handle the reconnect logic in cases when the connection to the browser is lost. In case of 
-// 'qr' events also, if the login is not done within a specific time, the connection gets lost
-client.on("qr", (qr) => {
-  // Generate and scan this code with your phone
-  console.log("QR RECEIVED");
-  qrcode.generate(qr, { small: true });
-});
-
-client.on("ready", () => {
-  console.log("WhatsApp bot client is ready!");
-});
-
-client.on("disconnected", (reason) => {
-    console.log("Client was logged out", reason);
-    client.destroy();
-    // setup client with new session data, if you want to use an existing session
-    client.initialize();
-  });
-
-client.on("message", async (msg) => {
-  if (msg.body) {
-    // maybe save guest messages to file 
-    console.log(`${msg.from} send ${msg.body}`);
-    if (msg.body !== 'חתונה') {
-        client.sendMessage(
-            msg.from,
-            "ההודעה שלך התקבלה"
-          );
-    }
-  }
-});
+let client;
 
 module.exports = {
+  initWhatsappBot() {
+    client = new Client({
+        puppeteer: {
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        },
+        authStrategy: new LocalAuth(),
+      });
+      
+      client.on("authenticated", (session) => {
+        console.log("AUTHENTICATED", session);
+      });
+      
+      // Check for uncaught exceptions and unhandled promise rejections**: These could abruptly crash your Node.js process or result in the mysterious error you're experiencing
+      process.on("unhandledRejection", (reason, promise) => {
+        console.error("Unhandled Rejection at:", promise, "reason:", reason);
+      });
+      
+      process.on("uncaughtException", function (err) {
+        console.log("Caught exception: " + err);
+      });
+      
+      // Check if Puppeteer is still connected**: If the puppeteer's browser is disconnected due to any reason, you must handle this error.
+      // Below is a piece of code that will help you to debug if puppeteer is disconnected.
+      client.on("disconnected", (reason) => {
+        console.log("Client was logged out", reason);
+      });
+      
+      // Handle possible session expiration**: WhatsApp sessions can expire, causing the puppeteer to error out.
+      // You can listen for the `auth_failure` event and handle re-authentication in that case
+      client.on("auth_failure", (msg) => {
+        // Fired if session restore was unsuccessfull
+        console.error("AUTHENTICATION FAILURE", msg);
+      });
+      
+      client.initialize();
+      
+      // Connect/Reconnect logic**: You might need to handle the reconnect logic in cases when the connection to the browser is lost. In case of
+      // 'qr' events also, if the login is not done within a specific time, the connection gets lost
+      client.on("qr", (qr) => {
+        // Generate and scan this code with your phone
+        console.log("QR RECEIVED");
+        qrcode.generate(qr, { small: true });
+      });
+      
+      client.on("ready", () => {
+        console.log("WhatsApp bot client is ready!");
+      });
+      
+      client.on("disconnected", (reason) => {
+        console.log("Client was logged out", reason);
+        client.destroy();
+        // setup client with new session data, if you want to use an existing session
+        client.initialize();
+      });
+      
+      client.on("message", async (msg) => {
+        if (msg.body) {
+          // maybe save guest messages to file
+          console.log(`${msg.from} send ${msg.body}`);
+          if (msg.body !== "חתונה") {
+            client.sendMessage(msg.from, "ההודעה שלך התקבלה");
+          } else {
+            client.sendMessage(
+              msg.from,
+              "מעולה, בבקשה לנסות לפתוח את הקישור כעת./nאם עדין לא עובד נא לכתוב לנתנאל או אבישג בפרטי"
+            );
+          }
+        }
+      });
+  },
   async sendWhatsAppBotMessage(userMessage, invitation) {
     // Getting chatId from the number.
     // we have to delete "+" from the beginning and add "@c.us" at the end of the number.
