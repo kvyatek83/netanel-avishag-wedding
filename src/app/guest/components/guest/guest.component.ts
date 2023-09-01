@@ -94,6 +94,7 @@ export class GuestComponent implements OnInit, OnDestroy {
     this.userUuid = this.route.snapshot.paramMap.get('id');
     this.isLoading = true;
     if (!this.authService.guestDetails) {
+      this.subscribeToGuestChanges();
       setTimeout(() => this.initGuestAndWeddingDetails(), 3000);
     } else {
       this.initGuestAndWeddingDetails();
@@ -255,7 +256,6 @@ export class GuestComponent implements OnInit, OnDestroy {
               transport: guestDetails.transport,
             });
 
-            this.subscribeToGuestChanges(participants);
             this.creatWeddingDetails(wedding);
             this.isLoading = false;
           }
@@ -263,13 +263,13 @@ export class GuestComponent implements OnInit, OnDestroy {
     }
   }
 
-  private subscribeToGuestChanges(participants: number): void {
+  private subscribeToGuestChanges(): void {
     this.form.valueChanges
       .pipe(takeUntil(this.destroy$), startWith(this.form.value))
       .subscribe((value) => {
         if (this.guest?.confirmation) {
           const originalStatus = {
-            participants: participants,
+            participants: Number(this.guest.participants),
             transport: this.guest?.transport,
           };
           this.changesMade =

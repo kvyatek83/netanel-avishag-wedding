@@ -21,7 +21,7 @@ type NotificationIcon =
   | 'done'
   | 'warning_amber_outline'
   | 'close_outline';
-type NotificationColor = '#4070f4' | ' #12c99b' | '#f2a600' | '#e41749';
+type NotificationColor = '#4070f4' | '#12c99b' | '#f2a600' | '#e41749';
 
 interface NotificationConfigurations {
   title: NotificationTitle;
@@ -77,7 +77,7 @@ export class NotificationComponent implements OnDestroy {
       'SUCCESS',
       {
         title: 'success',
-        color: ' #12c99b',
+        color: '#12c99b',
         icon: 'done',
       },
     ],
