@@ -13,7 +13,6 @@ if (process.env.MESSAGE_PLATFORM === "bot") {
   whatsappBot.initWhatsappBot();
 }
 
-
 router.get("/admin", verifyToken, checkRole("admin"), (req, res) => {
   res.status(200).send("Admin action");
 });
@@ -125,6 +124,40 @@ router.post(
   }
 );
 
+router.get("/admin/bot-status", verifyToken, checkRole("admin"), (req, res) => {
+  if (process.env.MESSAGE_PLATFORM !== "bot") {
+    return res.status(400).send({ status: "ERROR", messages: "botIsNotInUse" });
+  } else {
+    return res.status(200).send(whatsappBot.getBotStatus());
+  }
+});
+
+router.get("/admin/bot-qr", verifyToken, checkRole("admin"), (req, res) => {
+  if (process.env.MESSAGE_PLATFORM !== "bot") {
+    return res.status(400).send({ status: "ERROR", messages: "botIsNotInUse" });
+  } else {
+    return res.status(200).send(whatsappBot.getQrCode());
+  }
+});
+
+router.get(
+  "/admin/download-all-guests-messages",
+  verifyToken,
+  checkRole("admin"),
+  async (req, res) => {
+    if (process.env.MESSAGE_PLATFORM === "bot") {
+      try {
+        const path = whatsappBot.getGuestMessagesPath();
+        res.download(path);
+      } catch (error) {
+        console.log(error);
+        return res.status(500).send({ message: `general` });
+      }
+    }
+      
+  }
+);
+
 router.post(
   "/admin/send-message",
   verifyToken,
@@ -213,13 +246,11 @@ router.post(
     } else {
       console.log(`${sent} messages sent, ${failed} messages failed`);
 
-      return res
-        .status(200)
-        .send({
-          status: "INFO",
-          messages: "messagesStatus",
-          params: { sent, failed },
-        });
+      return res.status(200).send({
+        status: "INFO",
+        messages: "messagesStatus",
+        params: { sent, failed },
+      });
     }
   }
 );

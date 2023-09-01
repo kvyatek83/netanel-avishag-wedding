@@ -1,31 +1,71 @@
 <div *transloco="let t; read: 'messageBox'" [class.rtl]="isRtl" class="dialog">
-  <h2 mat-dialog-title>
-    {{
-      data.selectedUsers > 1
-        ? t("guestsTitle", { selectedUsers: data.selectedUsers })
-        : t("guestTitle")
-    }}
-  </h2>
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      {{
+        data.selectedUsers > 1
+          ? t("guestsTitle", { selectedUsers: data.selectedUsers })
+          : t("guestTitle")
+      }}
+    </h2>
+
+    <span class="bot-status">
+      <mat-icon
+        [matTooltip]="t('checkingBotStatus')"
+        class="bot-status__checking"
+        *ngIf="checkingBotStatus"
+        >sync</mat-icon
+      >
+      <mat-icon
+        [matTooltip]="t('botConnected')"
+        class="bot-status__connected"
+        *ngIf="!checkingBotStatus && botStatus"
+        (click)="downloadGuestsMessages()"
+        >done</mat-icon
+      >
+      <mat-icon
+        [matTooltip]="t('botNotConnected')"
+        class="bot-status__failed"
+        *ngIf="!checkingBotStatus && !botStatus"
+        (click)="tryConnectBot()"
+        >close</mat-icon
+      >
+    </span>
+  </div>
   <mat-dialog-content>
-    <form [formGroup]="form" class="form" [class.rtl]="isRtl">
-      <div class="message-controls">
-        <mat-checkbox formControlName="invitation">{{
-          t("invitation")
-        }}</mat-checkbox>
-        <div class="add-to-message-controls">
-          <button mat-raised-button color="primary" (click)="addToMessage('guestName')">
-            {{ t("guestName") }}
-          </button>
-          <button mat-raised-button color="primary" (click)="addToMessage('link')">
-            {{ t("link") }}
-          </button>
+    <ng-container *ngIf="!qrCode; else qrCodeDisplay">
+      <form [formGroup]="form" class="form" [class.rtl]="isRtl">
+        <div class="message-controls">
+          <mat-checkbox formControlName="invitation">{{
+            t("invitation")
+          }}</mat-checkbox>
+          <div class="add-to-message-controls">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="addToMessage('guestName')"
+            >
+              {{ t("guestName") }}
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="addToMessage('link')"
+            >
+              {{ t("link") }}
+            </button>
+          </div>
         </div>
+        <mat-form-field appearance="fill">
+          <mat-label>{{ t("messagePlaceholdeer") }}</mat-label>
+          <textarea matInput #messageBox formControlName="message"></textarea>
+        </mat-form-field>
+      </form>
+    </ng-container>
+    <ng-template #qrCodeDisplay>
+      <div class="qr">
+        <canvas class="qr-holder"></canvas>
       </div>
-      <mat-form-field appearance="fill">
-        <mat-label>{{ t("messagePlaceholdeer") }}</mat-label>
-        <textarea matInput #messageBox formControlName="message"></textarea>
-      </mat-form-field>
-    </form>
+    </ng-template>
   </mat-dialog-content>
   <mat-dialog-actions [align]="'end'">
     <button mat-button mat-dialog-close class="action-button">

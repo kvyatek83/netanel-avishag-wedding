@@ -71,6 +71,9 @@
     "link": "הוספת לינק לאתר",
     "guestName": "הוספת שם אורח/ת",
     "messagePlaceholdeer": "הכנסת הודעה חדשה פה...",
+    "checkingBotStatus": "...בודק מצב בוט",
+    "botConnected": "!בוט מחובר",
+    "botNotConnected": "בוט מנותק, לחץ להתחבר",
     "submit": "שליחה",
     "cancel": "ביטול"
   },
@@ -115,6 +118,7 @@
       "fileFormat": "קובץ לא חוקי. נא לבחור רק קובץ CSV או JSON.",
       "loginAgain": "בבקשה להתחבר מחדש",
       "allMessageFailed": "כל ההודעות נכשלו",
+      "botIsNotInUse": "לא נבחר שימוש בבוט של וואטסאפ",
       "general": "שגיאה לא מוכרת"
     },
     "warning": {

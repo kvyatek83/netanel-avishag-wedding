@@ -75,6 +75,9 @@
     "link": "Insert invitation link",
     "guestName": "Insert guest name",
     "messagePlaceholdeer": "Write you message here...",
+    "checkingBotStatus": "Checking bot status",
+    "botConnected": "Bot connected!",
+    "botNotConnected": "Bot is not connected, press to reconnecte",
     "submit": "Send",
     "cancel": "Cancel"
   },
@@ -119,6 +122,7 @@
       "fileFormat": "Invalid file format. Please select a CSV or JSON file.",
       "loginAgain": "You need to login again",
       "allMessageFailed": "All messages failed",
+      "botIsNotInUse": "The whatsapp bot is not in use",
       "general": "Unknownen error"
     },
     "warning": {

@@ -72,4 +72,22 @@ export class AdminService {
       })
       .pipe(take(1));
   }
+
+  getBotStatus(): Observable<boolean> {
+    return this.http
+      .get<boolean>('/api/admin/bot-status');
+  }
+
+  getBotQrCode(): Observable<string> {
+    return this.http
+      .get('/api/admin/bot-qr', {responseType: 'text'}
+      )
+      .pipe(take(1));
+  }
+
+  downloadGuestMessages(): Observable<Blob> {
+    return this.http
+      .get<Blob>('/api/admin/download-all-guests-messages', { responseType: 'blob' as 'json' })
+      .pipe(take(1));
+  }
 }

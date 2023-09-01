@@ -2,6 +2,48 @@
   padding: 10px 0;
 }
 
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .bot-status {
+    display: flex;
+    align-items: center;
+    color: black;
+    margin: auto 0;
+    padding: 0 24px;
+
+    &__connected {
+      background-color: #12c99b;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    &__failed {
+      background-color: #f56d6d;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    &__checking {
+      background-color: rgb(243, 192, 96);
+      border-radius: 20px;
+      animation: spin-animation 1s infinite;
+      display: inline-block;
+
+      @keyframes spin-animation {
+        0% {
+          transform: rotate(359deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+    }
+  }
+}
+
 .form {
   width: 100%;
   display: flex;
@@ -23,6 +65,10 @@
       }
     }
   }
+}
+
+.qr {
+  margin: auto;
 }
 
 .mat-mdc-option-rtl {
