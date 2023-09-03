@@ -107,6 +107,7 @@ module.exports = {
             : (users[userIndex] = newUser);
         } else {
           newUser.role = users[userIndex].role;
+          newUser.password = users[userIndex].password;
           users[userIndex] = newUser
         }
       } else {
