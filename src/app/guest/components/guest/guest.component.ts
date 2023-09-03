@@ -281,7 +281,7 @@ export class GuestComponent implements OnInit, OnDestroy {
   private creatWeddingDetails(wedding: WeddingDetails): void {
     const eventDate = new Date(
       wedding.weddingYear,
-      wedding.weddingMonth,
+      wedding.weddingMonth - 1,
       wedding.weddingDay,
       wedding.weddingHour,
       wedding.weddingMinute
@@ -299,6 +299,21 @@ export class GuestComponent implements OnInit, OnDestroy {
       wedding.weddingDetails || ''
     )}&location=${encodeURIComponent(wedding.weddingLocation || '')}`;
 
-    this.wazeLink = wedding.wazeLink;
+    if (this.getMobileOS() === 'iOS' || this.getMobileOS() === 'Other') {
+      this.wazeLink = `waze://${wedding.wazeLink}`;
+
+    } else if (this.getMobileOS() === 'Android') {
+      this.wazeLink = `intent://${wedding.wazeLink}#Intent;scheme=waze;package=com.waze;end;`;
+    }
+  }
+
+  private getMobileOS(): 'Android' | 'iOS' | 'Other' {
+    const userAgent = navigator.userAgent
+    if (/android/i.test(userAgent)) {
+      return "Android"
+    } else if (/iPad|iPhone|iPod/.test(userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+      return "iOS"
+    }
+    return "Other"
   }
 }

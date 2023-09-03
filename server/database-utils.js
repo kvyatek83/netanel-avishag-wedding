@@ -159,7 +159,7 @@ module.exports = {
   },
   getWeddingDetails() {
     return {
-      wazeLink: `https://www.waze.com/ul?q=${
+      wazeLink: `ul?q=${
         process.env.WAZE_ADDRESS ||
         "%D7%90%D7%98%D7%95%D7%A8%D7%94%20-%20%D7%91%D7%99%D7%AA%20%D7%9C%D7%90%D7%A8%D7%95%D7%A2%D7%99%D7%9D"
       }&navigate=yes`,
