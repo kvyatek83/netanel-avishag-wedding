@@ -159,7 +159,7 @@ module.exports = {
   },
   getWeddingDetails() {
     return {
-      wazeLink: process.env.WAZE_ADDRESS || '?ll=31.842739733479974, 34.96723304638552&navigate=yes',
+      wazeLink: '?ll=31.842739733479974, 34.96723304638552&navigate=yes',
       eventName: process.env.EVENT_NAME || "אבישג ונתנאל מתחתנים",
       weddingYear: Number(process.env.WEDDING_YEAR) || 2023,
       weddingMonth: Number(process.env.WEDDING_MONTH) || 10,
