@@ -106,6 +106,9 @@ module.exports = {
           if (msg.body !== "חתונה") {
             return;
           }
+
+          const guestPhone = `+${msg.from.replace("@c.us", "")}`;
+
           const users = await db.readUsersFromCSV(db.getDbPath());
 
           const guest = users.find((user) => {
@@ -125,7 +128,6 @@ module.exports = {
 
 
           const guestMessages = await db.readUsersFromCSV(filePath);
-          const guestPhone = `+${msg.from.replace("@c.us", "")}`;
 
           if (guest) {
             const header = [
