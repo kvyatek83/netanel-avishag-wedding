@@ -159,7 +159,7 @@ module.exports = {
   },
   getWeddingDetails() {
     return {
-      wazeLink: '?ll=31.842725151580417, 34.96810902640726&navigate=yes',
+      wazeLink: process.env.WAZE_ADDRESS || '?ll=31.842739733479974, 34.96723304638552&navigate=yes',
       eventName: process.env.EVENT_NAME || "אבישג ונתנאל מתחתנים",
       weddingYear: Number(process.env.WEDDING_YEAR) || 2023,
       weddingMonth: Number(process.env.WEDDING_MONTH) || 10,
@@ -172,8 +172,3 @@ module.exports = {
     };
   },
 };
-
-// wazeLink: `ul?q=${
-//   process.env.WAZE_ADDRESS ||
-//   "%D7%90%D7%98%D7%95%D7%A8%D7%94%20-%20%D7%91%D7%99%D7%AA%20%D7%9C%D7%90%D7%A8%D7%95%D7%A2%D7%99%D7%9D"
-// }&navigate=yes`,

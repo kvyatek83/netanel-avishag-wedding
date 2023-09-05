@@ -101,34 +101,33 @@ module.exports = {
     client.on("message", async (msg) => {
       if (msg.body) {
         console.log(`${msg.from} send ${msg.body}`);
-        let res;
-
-        if (msg.body !== "חתונה") {
-          res = "ההודעה שלך התקבלה";
-        } else {
-          res =
-            "מעולה, בבקשה לצאת מהשיחה ולהיכנס אליה שוב ולנסות לפתוח את הקישור כעת.אם עדין לא עובד נא לכתוב לנתנאל או אבישג בפרטי";
-        }
 
         try {
-          client.sendMessage(msg.from, res);
+          if (msg.body !== "חתונה") {
+            return;
+          }
+          const users = await db.readUsersFromCSV(db.getDbPath());
 
+          const guest = users.find((user) => {
+            return user.phone === guestPhone;
+          });
+
+          if (!guest) {
+            return;
+          }
+
+          const guestInvite = `${process.env.GUEST_LINK}/${guest.id}`;
+          const transportMessage = "במידה ותצא הסעה מהצפון - מיקום ושעה ישלחו בהמשך.";
+
+
+          client.sendMessage(msg.from, guestInvite);
+          client.sendMessage(msg.from, transportMessage);
+
+
+          const guestMessages = await db.readUsersFromCSV(filePath);
           const guestPhone = `+${msg.from.replace("@c.us", "")}`;
-          const users = await db
-          .readUsersFromCSV(db.getDbPath())
-
-
-          const guest =
-          users.find((user) => {
-          console.log(guestPhone);
-          console.log(user.phone);
-
-              return user.phone === guestPhone;
-            });
 
           if (guest) {
-            const guestMessages = await db.readUsersFromCSV(filePath);
-
             const header = [
               { id: "hebrewname", title: "hebrewname" },
               { id: "phone", title: "phone" },
@@ -205,7 +204,7 @@ module.exports = {
       throw error;
     }
   },
-  getGuestMessagesPath(){
+  getGuestMessagesPath() {
     return filePath;
   },
   getBotStatus() {
@@ -217,5 +216,5 @@ module.exports = {
   },
   async getAllGuestsMessages() {
     return await db.readUsersFromCSV(filePath);
-  }
+  },
 };
