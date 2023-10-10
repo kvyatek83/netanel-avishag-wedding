@@ -11,7 +11,7 @@ export class CountdownComponent implements OnDestroy {
   weAreMarried = false;
 
   public dateNow = new Date();
-  public dDay = new Date('Oct 10 2023 18:00:00');
+  public dDay = new Date('Nov 21 2023 20:00:00');
   milliSecondsInASecond = 1000;
   hoursInADay = 24;
   minutesInAnHour = 60;
